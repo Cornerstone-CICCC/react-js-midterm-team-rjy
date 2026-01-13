@@ -33,7 +33,6 @@ app.use((0, cookie_session_1.default)({
 app.use(express_1.default.json());
 // Routes
 app.use("users", user_routes_1.default);
-// Create HTTP server and attach SocketIO
 app.use('/admin', adminProduct_routes_1.default);
 // Create HTTP server
 const server = (0, http_1.createServer)(app);
