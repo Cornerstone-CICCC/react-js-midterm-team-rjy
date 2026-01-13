@@ -5,6 +5,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
+import userRouter from "./routes/user.routes";
 dotenv.config();
 
 // Create server
@@ -36,6 +37,7 @@ app.use(
 app.use(express.json());
 
 // Routes
+app.use("users",userRouter)
 
 // Create HTTP server and attach SocketIO
 const server = createServer(app);
@@ -52,9 +54,6 @@ mongoose
   .connect(MONGO_URI, { dbName: "chatting_app" })
   .then(() => {
     console.log("Connected to MongoDB database");
-
-    // Start Socket.IO
-
 
     // Start the server
     const PORT = process.env.PORT || 3000;
