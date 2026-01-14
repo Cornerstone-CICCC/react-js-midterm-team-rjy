@@ -8,8 +8,9 @@ const adminProduct_controller_1 = __importDefault(require("../controllers/adminP
 const auth_middleware_1 = require("../middleware/auth.middleware");
 const admin_middleware_1 = require("../middleware/admin.middleware");
 const adminRouter = (0, express_1.Router)();
-adminRouter.get('/', auth_middleware_1.authLogin, admin_middleware_1.checkAdmin, adminProduct_controller_1.default.getAllProducts);
-adminRouter.post('/', auth_middleware_1.authLogin, admin_middleware_1.checkAdmin, adminProduct_controller_1.default.addProduct);
-adminRouter.put('/:id', auth_middleware_1.authLogin, admin_middleware_1.checkAdmin, adminProduct_controller_1.default.updateProductById);
-adminRouter.delete('/:id', auth_middleware_1.authLogin, admin_middleware_1.checkAdmin, adminProduct_controller_1.default.deleteProductById);
+adminRouter.get('/products', auth_middleware_1.authLogin, admin_middleware_1.checkAdmin, adminProduct_controller_1.default.getAllProducts);
+adminRouter.post('/products', auth_middleware_1.authLogin, admin_middleware_1.checkAdmin, adminProduct_controller_1.default.addProduct);
+adminRouter.get('/products/:id', auth_middleware_1.authLogin, admin_middleware_1.checkAdmin, adminProduct_controller_1.default.getProductById);
+adminRouter.put('/products/:id', auth_middleware_1.authLogin, admin_middleware_1.checkAdmin, adminProduct_controller_1.default.updateProductById);
+adminRouter.delete('/products/:id', auth_middleware_1.authLogin, admin_middleware_1.checkAdmin, adminProduct_controller_1.default.deleteProductById);
 exports.default = adminRouter;

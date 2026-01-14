@@ -18,12 +18,12 @@ const getAllProducts = async (req: Request, res: Response) => {
  * POST /admin/products
  */
 const addProduct = async (
-  req: Request<{}, {}, Pick<IProduct, "name" | "price" | "category" | "imageUrl" | "description">>,
+  req: Request<{}, {}, Pick<IProduct, "name" | "price" | "imageUrl" | "description">>,
   res: Response
 ) => {
-  const { name, price, category, description, imageUrl } = req.body
+  const { name, price, description, imageUrl } = req.body
   try{
-    const newProduct = await Product.create({ name, price, category, description, imageUrl })
+    const newProduct = await Product.create({ name, price, description, imageUrl })
     if(!newProduct){
       res.status(500).json({ message: "Unable to add product."})
       return
@@ -36,17 +36,31 @@ const addProduct = async (
 }
 
 /**
+ * GET /admin/products/:id
+ */
+const getProductById = async (req: Request<{ id: string }>, res: Response) => {
+  try{
+    const product = await Product.findById(req.params.id)
+    if(!product) return res.status(404).json({ message: "Product not found."})
+    res.status(200).json(product)
+  } catch(err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to get admin product.'})
+  }
+}
+
+/**
  * PUT /admin/products/:id
  */
 const updateProductById = async (
   req: Request<{ id: string }, {}, Partial<IProduct>>,
   res: Response
 ) => {
-  const { name, price, category, description, imageUrl } = req.body
+  const { name, price, description, imageUrl } = req.body
   try{
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, price, category, description, imageUrl },
+      { name, price, description, imageUrl },
       { new: true }
     )
     if(!updatedProduct){
@@ -61,7 +75,7 @@ const updateProductById = async (
 }
 
 /**
- * DELETE /admin/products:id
+ * DELETE /admin/products/:id
  */
 const deleteProductById = async (req: Request<{ id: string }>, res: Response) => {
   try{
@@ -80,6 +94,7 @@ const deleteProductById = async (req: Request<{ id: string }>, res: Response) =>
 export default {
   getAllProducts,
   addProduct,
+  getProductById,
   updateProductById,
   deleteProductById
 }
