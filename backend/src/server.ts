@@ -1,11 +1,11 @@
 import express from "express";
 import { createServer } from "http";
-import { Server } from "socket.io";
 import cors from "cors";
 import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.routes";
+import adminRouter from "./routes/adminProduct.routes";
 dotenv.config();
 
 // Create server
@@ -37,16 +37,11 @@ app.use(
 app.use(express.json());
 
 // Routes
-app.use("/users", userRouter)
+app.use("users",userRouter)
+app.use('/admin', adminRouter)
 
-// Create HTTP server and attach SocketIO
+// Create HTTP server
 const server = createServer(app);
-/*const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-  },
-});*/
 
 // Connect to MongoDB and start server
 const MONGO_URI = process.env.DATABASE_URL!;

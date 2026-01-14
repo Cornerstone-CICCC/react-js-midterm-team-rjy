@@ -10,6 +10,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const cookie_session_1 = __importDefault(require("cookie-session"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
+const adminProduct_routes_1 = __importDefault(require("./routes/adminProduct.routes"));
 dotenv_1.default.config();
 // Create server
 const app = (0, express_1.default)();
@@ -31,15 +32,10 @@ app.use((0, cookie_session_1.default)({
 }));
 app.use(express_1.default.json());
 // Routes
-app.use("/users", user_routes_1.default);
-// Create HTTP server and attach SocketIO
+app.use("users", user_routes_1.default);
+app.use('/admin', adminProduct_routes_1.default);
+// Create HTTP server
 const server = (0, http_1.createServer)(app);
-/*const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-  },
-});*/
 // Connect to MongoDB and start server
 const MONGO_URI = process.env.DATABASE_URL;
 mongoose_1.default
