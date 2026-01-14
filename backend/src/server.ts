@@ -5,6 +5,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 // Create server
@@ -13,7 +14,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:4321",
+    origin: "http://localhost:5173", 
     methods: ["GET", "POST"],
     credentials: true,
   })
@@ -26,7 +27,7 @@ if (!process.env.COOKIE_PRIMARY_KEY || !process.env.COOKIE_SECONDARY_KEY) {
 app.use(
   cookieSession({
     name: "session",
-    keys: [process.env.COOKIE_PRIMARY_KEY!, process.env.COOKIE_SECONDARY_KEY!],
+    keys: [process.env.COOKIE_PRIMARY_KEY, process.env.COOKIE_SECONDARY_KEY],
     maxAge: 25 * 60 * 1000,
     sameSite: "lax",
     secure: false,
@@ -35,33 +36,41 @@ app.use(
 
 app.use(express.json());
 
-// Routes
+// =======================
+// Routes (Products + Cart)
+// =======================
+import productRoutes from "./routes/productRoutes";
+import cartRoutes from "./routes/cartRoutes";
 
-// Create HTTP server and attach SocketIO
+app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+
+// =======================
+// Socket + Server
+// =======================
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:4321",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
 
-// Connect to MongoDB and start server
-const MONGO_URI = process.env.DATABASE_URL!;
+// =======================
+// MongoDB Connection
+// =======================
+const MONGO_URI = process.env.DATABASE_URL as string;
+
 mongoose
-  .connect(MONGO_URI, { dbName: "chatting_app" })
+  .connect(MONGO_URI)
   .then(() => {
-    console.log("Connected to MongoDB database");
+    console.log("Connected to MongoDB");
 
-    // Start Socket.IO
-
-
-    // Start the server
     const PORT = process.env.PORT || 3000;
     server.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+      console.log(`Server running on http://localhost:${PORT}`);
     });
   })
   .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
+    console.error("MongoDB connection error:", error);
   });
