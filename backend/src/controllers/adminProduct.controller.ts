@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { Product } from "../models/product.model"
+import Product, { IProduct } from "../models/product.model"
 
 /**
  * GET /admin/products
@@ -17,10 +17,13 @@ const getAllProducts = async (req: Request, res: Response) => {
 /**
  * POST /admin/products
  */
-const addProduct = async (req: Request<{}, {}, Product>, res: Response) => {
-  const { name, price, category, description, imgUrl } = req.body
+const addProduct = async (
+  req: Request<{}, {}, Pick<IProduct, "name" | "price" | "imageUrl" | "description">>,
+  res: Response
+) => {
+  const { name, price, description, imageUrl } = req.body
   try{
-    const newProduct = await Product.create({ name, price, category, description, imgUrl })
+    const newProduct = await Product.create({ name, price, description, imageUrl })
     if(!newProduct){
       res.status(500).json({ message: "Unable to add product."})
       return
@@ -33,14 +36,31 @@ const addProduct = async (req: Request<{}, {}, Product>, res: Response) => {
 }
 
 /**
+ * GET /admin/products/:id
+ */
+const getProductById = async (req: Request<{ id: string }>, res: Response) => {
+  try{
+    const product = await Product.findById(req.params.id)
+    if(!product) return res.status(404).json({ message: "Product not found."})
+    res.status(200).json(product)
+  } catch(err) {
+    console.error(err)
+    res.status(500).json({ error: 'Failed to get admin product.'})
+  }
+}
+
+/**
  * PUT /admin/products/:id
  */
-const updateProductById = async (req: Request<{ id: string }, Partial<Product>>, res: Response) => {
-  const { name, price, category, description, imgUrl } = req.body
+const updateProductById = async (
+  req: Request<{ id: string }, {}, Partial<IProduct>>,
+  res: Response
+) => {
+  const { name, price, description, imageUrl } = req.body
   try{
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, price, category, description, imgUrl },
+      { name, price, description, imageUrl },
       { new: true }
     )
     if(!updatedProduct){
@@ -55,7 +75,7 @@ const updateProductById = async (req: Request<{ id: string }, Partial<Product>>,
 }
 
 /**
- * DELETE /admin/products:id
+ * DELETE /admin/products/:id
  */
 const deleteProductById = async (req: Request<{ id: string }>, res: Response) => {
   try{
@@ -74,6 +94,7 @@ const deleteProductById = async (req: Request<{ id: string }>, res: Response) =>
 export default {
   getAllProducts,
   addProduct,
+  getProductById,
   updateProductById,
   deleteProductById
 }

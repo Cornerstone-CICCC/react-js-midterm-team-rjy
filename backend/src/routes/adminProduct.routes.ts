@@ -5,9 +5,10 @@ import { checkAdmin } from "../middleware/admin.middleware"
 
 const adminRouter = Router()
 
-adminRouter.get('/', authLogin, checkAdmin, adminProductController.getAllProducts)
-adminRouter.post('/', authLogin, checkAdmin, adminProductController.addProduct)
-adminRouter.put('/:id', authLogin, checkAdmin, adminProductController.updateProductById)
-adminRouter.delete('/:id', authLogin, checkAdmin, adminProductController.deleteProductById)
+adminRouter.get('/products', authLogin, checkAdmin, adminProductController.getAllProducts)
+adminRouter.post('/products', authLogin, checkAdmin, adminProductController.addProduct)
+adminRouter.get('/products/:id', authLogin, checkAdmin, adminProductController.getProductById)
+adminRouter.put('/products/:id', authLogin, checkAdmin, adminProductController.updateProductById)
+adminRouter.delete('/products/:id', authLogin, checkAdmin, adminProductController.deleteProductById)
 
 export default adminRouter
