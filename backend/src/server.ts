@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
 import userRouter from "./routes/user.routes";
-import adminRouter from "./routes/adminProduct.routes";
 dotenv.config();
 
 // Create server
@@ -38,7 +37,6 @@ app.use(express.json());
 
 // Routes
 app.use("/users", userRouter);
-app.use('/admin', adminRouter)
 
 // Create HTTP server
 const server = createServer(app);
