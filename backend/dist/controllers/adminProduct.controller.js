@@ -8,14 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const product_model_1 = require("../models/product.model");
+const product_model_1 = __importDefault(require("../models/product.model"));
 /**
  * GET /admin/products
  */
 const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const products = yield product_model_1.Product.find();
+        const products = yield product_model_1.default.find();
         res.status(200).json(products);
     }
     catch (err) {
@@ -27,9 +30,9 @@ const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function*
  * POST /admin/products
  */
 const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, price, category, description, imgUrl } = req.body;
+    const { name, price, category, description, imageUrl } = req.body;
     try {
-        const newProduct = yield product_model_1.Product.create({ name, price, category, description, imgUrl });
+        const newProduct = yield product_model_1.default.create({ name, price, category, description, imageUrl });
         if (!newProduct) {
             res.status(500).json({ message: "Unable to add product." });
             return;
@@ -45,9 +48,9 @@ const addProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
  * PUT /admin/products/:id
  */
 const updateProductById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, price, category, description, imgUrl } = req.body;
+    const { name, price, category, description, imageUrl } = req.body;
     try {
-        const updatedProduct = yield product_model_1.Product.findByIdAndUpdate(req.params.id, { name, price, category, description, imgUrl }, { new: true });
+        const updatedProduct = yield product_model_1.default.findByIdAndUpdate(req.params.id, { name, price, category, description, imageUrl }, { new: true });
         if (!updatedProduct) {
             res.status(404).json({ message: "Product not found." });
             return;
@@ -64,7 +67,7 @@ const updateProductById = (req, res) => __awaiter(void 0, void 0, void 0, functi
  */
 const deleteProductById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const deletedProduct = yield product_model_1.Product.findByIdAndDelete(req.params.id);
+        const deletedProduct = yield product_model_1.default.findByIdAndDelete(req.params.id);
         if (!deletedProduct) {
             res.status(404).json({ message: "Product not found." });
             return;

@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { Product } from "../models/product.model"
+import Product, { IProduct } from "../models/product.model"
 
 /**
  * GET /admin/products
@@ -17,10 +17,13 @@ const getAllProducts = async (req: Request, res: Response) => {
 /**
  * POST /admin/products
  */
-const addProduct = async (req: Request<{}, {}, Product>, res: Response) => {
-  const { name, price, category, description, imgUrl } = req.body
+const addProduct = async (
+  req: Request<{}, {}, Pick<IProduct, "name" | "price" | "category" | "imageUrl" | "description">>,
+  res: Response
+) => {
+  const { name, price, category, description, imageUrl } = req.body
   try{
-    const newProduct = await Product.create({ name, price, category, description, imgUrl })
+    const newProduct = await Product.create({ name, price, category, description, imageUrl })
     if(!newProduct){
       res.status(500).json({ message: "Unable to add product."})
       return
@@ -35,12 +38,15 @@ const addProduct = async (req: Request<{}, {}, Product>, res: Response) => {
 /**
  * PUT /admin/products/:id
  */
-const updateProductById = async (req: Request<{ id: string }, Partial<Product>>, res: Response) => {
-  const { name, price, category, description, imgUrl } = req.body
+const updateProductById = async (
+  req: Request<{ id: string }, {}, Partial<IProduct>>,
+  res: Response
+) => {
+  const { name, price, category, description, imageUrl } = req.body
   try{
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, price, category, description, imgUrl },
+      { name, price, category, description, imageUrl },
       { new: true }
     )
     if(!updatedProduct){
