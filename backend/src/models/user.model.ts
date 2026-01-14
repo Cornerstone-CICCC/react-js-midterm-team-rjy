@@ -4,6 +4,7 @@ export interface IUser extends Document {
     fullname: string;
     email: string;
     password: string;
+    address?: string;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -11,6 +12,7 @@ const UserSchema: Schema<IUser> = new Schema({
     fullname: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    address: { type: String }
 },{timestamps: true});
 
 UserSchema.pre("save", async function (this: IUser) {

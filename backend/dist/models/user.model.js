@@ -52,6 +52,7 @@ const UserSchema = new mongoose_1.Schema({
     fullname: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    address: { type: String }
 }, { timestamps: true });
 UserSchema.pre("save", function () {
     return __awaiter(this, void 0, void 0, function* () {

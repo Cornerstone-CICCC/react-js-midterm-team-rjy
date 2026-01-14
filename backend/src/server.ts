@@ -14,8 +14,8 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:4321",
-    methods: ["GET", "POST"],
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
@@ -37,21 +37,21 @@ app.use(
 app.use(express.json());
 
 // Routes
-app.use("users",userRouter)
+app.use("/users", userRouter)
 
 // Create HTTP server and attach SocketIO
 const server = createServer(app);
-const io = new Server(server, {
+/*const io = new Server(server, {
   cors: {
-    origin: "http://localhost:4321",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
-});
+});*/
 
 // Connect to MongoDB and start server
 const MONGO_URI = process.env.DATABASE_URL!;
 mongoose
-  .connect(MONGO_URI, { dbName: "chatting_app" })
+  .connect(MONGO_URI, { dbName: "shopping_app" })
   .then(() => {
     console.log("Connected to MongoDB database");
 

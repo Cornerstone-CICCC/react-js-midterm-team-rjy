@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
-const socket_io_1 = require("socket.io");
 const cors_1 = __importDefault(require("cors"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const cookie_session_1 = __importDefault(require("cookie-session"));
@@ -16,8 +15,8 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Middleware
 app.use((0, cors_1.default)({
-    origin: "http://localhost:4321",
-    methods: ["GET", "POST"],
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 }));
 if (!process.env.COOKIE_PRIMARY_KEY || !process.env.COOKIE_SECONDARY_KEY) {
@@ -32,19 +31,19 @@ app.use((0, cookie_session_1.default)({
 }));
 app.use(express_1.default.json());
 // Routes
-app.use("users", user_routes_1.default);
+app.use("/users", user_routes_1.default);
 // Create HTTP server and attach SocketIO
 const server = (0, http_1.createServer)(app);
-const io = new socket_io_1.Server(server, {
-    cors: {
-        origin: "http://localhost:4321",
-        methods: ["GET", "POST"],
-    },
-});
+/*const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
+});*/
 // Connect to MongoDB and start server
 const MONGO_URI = process.env.DATABASE_URL;
 mongoose_1.default
-    .connect(MONGO_URI, { dbName: "chatting_app" })
+    .connect(MONGO_URI, { dbName: "shopping_app" })
     .then(() => {
     console.log("Connected to MongoDB database");
     // Start the server

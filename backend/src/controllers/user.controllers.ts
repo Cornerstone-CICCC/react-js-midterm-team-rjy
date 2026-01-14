@@ -91,48 +91,41 @@ export const getCurrentUser = async (req: Request, res: Response) => {
  * Log out the current user
  */
 export const logOut = (req: Request, res: Response) => {
-    if(req.session) (req.session.destroy(err => {
-        if(err) {
-            console.error("Logout error: ", err);
-            return res.status(500).json({ message: "Internal server error" });
-        }
-        res.status(200).json({ message: "Logout successful" });
-    }));   
-}
+  if (req.session) (req.session as any) = null;
+  res.status(200).json({ message: "Logout successful!" });
+};
 
 /**
  * Change password for the logged-in user
  */
-export const changePassword = async (req: Request, res: Response) => {
-    try {
-        const userId = req.session?.userId;
-        if(!userId) return res.status(401).json({ message: "Unauthorized" });
-        const { password, email } = req.body;
-        if(!password && email) {
-            return res.status(400).json({ message: "New password is required" });
-        }
+export const updateProfile = async (req: Request, res: Response) => {
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
 
-        const user = await User.findById(userId);
-        if(!user) return res.status(404).json({ message: "User not found" });
-        
-        if(password) user.password = password;
-        await user.save();
+  const { fullname, email, address } = req.body;
 
-        res.json({
-            message: "Account updated",
-            user: { id: user._id, fullname: user.fullname, email: user.email, password: user.password },
-        });
+  const updated = await User.findByIdAndUpdate(
+    req.session.userId,
+    {
+      fullname: fullname || "",
+      email: email || "",
+      address: address || "",
+    },
+    { new: true }
+  );
 
-    }catch (error) {
-        console.error("Change password error: ",error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-}
+  res.status(200).json({
+    message: "Profile updated",
+    user: updated,
+  });
+};
+
 
 export default {
     signUp,
     logIn,
     getCurrentUser,
     logOut,
-    changePassword
+    updateProfile
 }
