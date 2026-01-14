@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changePassword = exports.logOut = exports.getCurrentUser = exports.logIn = exports.signUp = void 0;
+exports.updateProfile = exports.logOut = exports.getCurrentUser = exports.logIn = exports.signUp = void 0;
 const user_model_1 = require("../models/user.model");
 /**
  * Sign up a new user
@@ -92,49 +92,33 @@ exports.getCurrentUser = getCurrentUser;
  */
 const logOut = (req, res) => {
     if (req.session)
-        (req.session.destroy(err => {
-            if (err) {
-                console.error("Logout error: ", err);
-                return res.status(500).json({ message: "Internal server error" });
-            }
-            res.status(200).json({ message: "Logout successful" });
-        }));
+        req.session = null;
+    res.status(200).json({ message: "Logout successful!" });
 };
 exports.logOut = logOut;
 /**
  * Change password for the logged-in user
  */
-const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    try {
-        const userId = (_a = req.session) === null || _a === void 0 ? void 0 : _a.userId;
-        if (!userId)
-            return res.status(401).json({ message: "Unauthorized" });
-        const { password, email } = req.body;
-        if (!password && email) {
-            return res.status(400).json({ message: "New password is required" });
-        }
-        const user = yield user_model_1.User.findById(userId);
-        if (!user)
-            return res.status(404).json({ message: "User not found" });
-        if (password)
-            user.password = password;
-        yield user.save();
-        res.json({
-            message: "Account updated",
-            user: { id: user._id, fullname: user.fullname, email: user.email, password: user.password },
-        });
+const updateProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Not authenticated" });
     }
-    catch (error) {
-        console.error("Change password error: ", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
+    const { fullname, email, address } = req.body;
+    const updated = yield user_model_1.User.findByIdAndUpdate(req.session.userId, {
+        fullname: fullname || "",
+        email: email || "",
+        address: address || "",
+    }, { new: true });
+    res.status(200).json({
+        message: "Profile updated",
+        user: updated,
+    });
 });
-exports.changePassword = changePassword;
+exports.updateProfile = updateProfile;
 exports.default = {
     signUp: exports.signUp,
     logIn: exports.logIn,
     getCurrentUser: exports.getCurrentUser,
     logOut: exports.logOut,
-    changePassword: exports.changePassword
+    updateProfile: exports.updateProfile
 };

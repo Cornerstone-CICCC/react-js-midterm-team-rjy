@@ -37,7 +37,7 @@ app.use(
 app.use(express.json());
 
 // Routes
-app.use("users",userRouter)
+app.use("/users", userRouter);
 app.use('/admin', adminRouter)
 
 // Create HTTP server

@@ -53,6 +53,7 @@ const UserSchema = new mongoose_1.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
+    address: { type: String }
 }, { timestamps: true });
 UserSchema.pre("save", function () {
     return __awaiter(this, void 0, void 0, function* () {
