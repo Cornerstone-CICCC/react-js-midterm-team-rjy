@@ -4,6 +4,7 @@ import type { Product } from "../../types/product.types"
 
 const AdminDashboard = () => {
   const navigate = useNavigate()
+  const [loading, setLoading] = useState<boolean>(true)
   const [products, setProducts] = useState<Product[]>([])
 
   useEffect(() => {
@@ -12,14 +13,19 @@ const AdminDashboard = () => {
         const res = await fetch("http://localhost:3000/admin/products", {
           credentials: "include",
         })
-        if(!res.ok){
-          throw new Error('Failed to fetch products.')
+        if(res.status === 403){
+          navigate('/profile')
+          return
         }
+        if(!res.ok) throw new Error('Failed to fetch products.');
+
         const data = await res.json()
         setProducts(data)
       } catch(err) {
         console.error(err)
         return
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -36,6 +42,8 @@ const AdminDashboard = () => {
 
     setProducts((prev) => prev.filter((p) => p._id !== id))
   } 
+
+  if(loading) return <p>Loading...</p>
 
   return (
     <div className="admin">
