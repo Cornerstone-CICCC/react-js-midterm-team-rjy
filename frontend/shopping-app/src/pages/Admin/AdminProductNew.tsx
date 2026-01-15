@@ -1,16 +1,25 @@
+import { useNavigate } from "react-router-dom"
 import AdminProductForm, { type ProductFormData } from "./AdminProductForm"
 
-
 const AdminProductNew = () => {
+  const navigate = useNavigate()
+
   const handleCreate = async (data: ProductFormData) => {
-    await fetch("http://localhost:3000/admin/products", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
+    try{
+      const res = await fetch("http://localhost:3000/admin/products", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+      if(!res.ok) throw new Error("Failed to create new product.")
+      navigate("/admin/products")
+    } catch(err) {
+      console.error(err)
+      alert('Failed to create new product.')
+    }
   }
 
   return (
