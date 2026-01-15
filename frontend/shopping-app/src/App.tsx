@@ -5,6 +5,8 @@ import SignIn from "./components/SignIn";
 import Success from "./components/SucessRegister";
 import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
+import Checkout from "./components/Checkout";
+import Confirmation from "./components/Confirmation";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route path="/success" element={<Success />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/edit-profile" element={<EditProfile />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/confirmation" element={<Confirmation />} />
       </Routes>
     </BrowserRouter>
   );

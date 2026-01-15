@@ -40,7 +40,7 @@ export default function BottomNav() {
       </button>
 
       <button
-        onClick={() => navigate("/likes")}
+        onClick={() => navigate("/checkout")}
         className="flex flex-col items-center text-slate-700 hover:text-slate-900"
       >
         <img src="/assets/favorite_icon.svg" className="w-6 h-6" />
