@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 import Home from "./components/Home";
 import SignUp from "./components/SignUp";
@@ -28,6 +29,7 @@ function App() {
         <Route path="/admin/products/new" element={<AdminProductNew />} />
         <Route path="/admin/products/edit/:id" element={<AdminProductEdit />} />
       </Routes>
+      <Toaster position="bottom-center"/>
     </BrowserRouter>
   );
 }
