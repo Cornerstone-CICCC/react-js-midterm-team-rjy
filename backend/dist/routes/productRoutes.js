@@ -15,26 +15,53 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const Product_model_1 = __importDefault(require("../models/Product.model"));
 const router = (0, express_1.Router)();
+/* =======================
+   GET all products
+======================= */
 router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const products = yield Product_model_1.default.find();
         res.json(products);
     }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server Error" });
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to fetch products" });
     }
 }));
+/* =======================
+   GET product by id
+======================= */
+router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const product = yield Product_model_1.default.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        res.json(product);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to fetch product" });
+    }
+}));
+/* =======================
+   POST product (Admin test)
+======================= */
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, price, imageUrl } = req.body;
-        const newProduct = new Product_model_1.default({ name, price, imageUrl });
+        const { name, price, imageUrl, description } = req.body;
+        const newProduct = new Product_model_1.default({
+            name,
+            price,
+            imageUrl,
+            description,
+        });
         const saved = yield newProduct.save();
         res.status(201).json(saved);
     }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server Error" });
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to create product" });
     }
 }));
 exports.default = router;

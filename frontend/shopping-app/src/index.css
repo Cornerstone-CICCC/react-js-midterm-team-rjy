@@ -1,68 +1,476 @@
+/* Tailwind v4 (vite plugin) */
+@import "tailwindcss";
+
+/* =========================
+   GLOBAL BASE
+========================= */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+html,
+body {
+  height: 100%;
 }
 
 body {
   margin: 0;
+  background: #f6f6f6;
+  color: #111827;
+  font-family: "Lora", system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+    Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== no-scrollbar (pure CSS only) ===== */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* =========================================================
+   PRODUCTS LIST (Figma-like)
+   - 2 columns
+   - bottom price + heart icon area
+   - line clamp
+========================================================= */
+
+/* category chips row */
+.chip-row {
+  padding-bottom: 12px;
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+}
+.chip-row.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.chip-row.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+/* chip */
+.chip {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  background: #fff;
+  color: rgba(0, 0, 0, 0.65);
   cursor: pointer;
-  transition: border-color 0.25s;
+  white-space: nowrap;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
 }
-button:hover {
-  border-color: #646cff;
+.chip:hover {
+  background: rgba(0, 0, 0, 0.04);
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.chip-active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* card container */
+.card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 6px 18px rgba(0,0,0,.05);
+  overflow: hidden;
 }
+
+/* media area */
+.card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: rgba(0,0,0,.04);
+}
+.card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* heart button */
+.fav-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 6px 14px rgba(0,0,0,.08);
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+}
+.fav-btn:hover {
+  background: rgba(255,255,255,1);
+}
+.fav-btn:active {
+  transform: scale(0.98);
+}
+
+/* body */
+.card-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: rgba(0,0,0,.88);
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.price-row {
+  padding-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.price {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0,0,0,.9);
+}
+
+/* small buttons */
+.btn-mini {
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid rgba(0,0,0,.10);
+  background: #fff;
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.btn-mini:hover {
+  background: rgba(0,0,0,.04);
+}
+
+/* =========================================================
+   CART (Figma-like) ONLY  ✅ 네 기존 코드 유지 + @apply 제거 버전
+========================================================= */
+.cart-figma{
+  background:#F5F5F6;
+  min-height:100vh;
+}
+
+/* top bar */
+.cart-figma-top{
+  height:56px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 14px;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.cart-figma-icon{
+  width:34px;height:34px;
+  border-radius:10px;
+  border:0;
+  background:transparent;
+  color:rgba(0,0,0,.7);
+  cursor:pointer;
+}
+.cart-figma-title{
+  font-size:14px;
+  font-weight:600;
+  color:#111;
+}
+.cart-figma-sub{
+  padding:14px 16px 10px;
+  font-size:12px;
+  color:rgba(0,0,0,.45);
+}
+
+/* list */
+.cart-figma-list{
+  padding:0 16px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+/* item row */
+.cart-figma-item{
+  background:#fff;
+  border-radius:12px;          /* ✅ 둥근 정도 줄임 */
+  padding:10px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  border:1px solid rgba(0,0,0,.05);
+}
+
+/* thumb */
+.cart-figma-thumb{
+  width:68px;height:68px;
+  border-radius:10px;          /* ✅ 둥근 정도 줄임 */
+  overflow:hidden;
+  background:rgba(0,0,0,.05);
+  flex:0 0 auto;
+}
+.cart-figma-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* middle text */
+.cart-figma-mid{
+  flex:1;
+  min-width:0;
+}
+.cart-figma-name{
+  font-size:12px;
+  font-weight:600;
+  color:rgba(0,0,0,.75);
+  line-height:1.25;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+/* price area (sale / original) */
+.cart-figma-price{
+  margin-top:8px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.cart-figma-price .sale{
+  font-size:12px;
+  font-weight:700;
+  color:#E11D48; /* red-600 느낌 */
+}
+.cart-figma-price .original{
+  font-size:11px;
+  color:rgba(0,0,0,.30);
+  text-decoration: line-through;
+}
+.cart-figma-price .normal{
+  font-size:12px;
+  font-weight:700;
+  color:rgba(0,0,0,.70);
+}
+
+/* right controls */
+.cart-figma-right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+
+/* X (name line에 올리려면 Cart.tsx에서 배치만 바꾸면 됨. 스타일은 여기서 유지) */
+.cart-figma-x{
+  width:28px;height:28px;
+  border:0;
+  background:transparent;
+  color:rgba(0,0,0,.35);
+  cursor:pointer;
+  border-radius:10px;
+}
+.cart-figma-x:disabled{opacity:.5;cursor:not-allowed;}
+
+/* qty pill */
+.cart-figma-qty{
+  height:34px;
+  width:110px;
+  border-radius:10px;          /* ✅ 둥근 정도 줄임 */
+  border:1px solid rgba(0,0,0,.1);
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 10px;
+}
+.qty-btn{
+  width:28px;height:28px;
+  border:0;
+  background:transparent;
+  color:rgba(0,0,0,.55);
+  cursor:pointer;
+  border-radius:8px;
+  font-size:16px;
+}
+.qty-btn:disabled{opacity:.35;cursor:not-allowed;}
+.qty-num{
+  width:24px;
+  text-align:center;
+  font-size:12px;
+  font-weight:600;
+  color:rgba(0,0,0,.7);
+}
+
+/* summary block */
+.cart-figma-summary{
+  margin-top:6px;
+  padding:14px 16px 18px;
+  background:#F5F5F6;
+  border-top:1px solid rgba(0,0,0,.08);
+}
+.sum-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:6px 0;
+  font-size:12px;
+  color:rgba(0,0,0,.45);
+}
+.sum-val{
+  font-weight:600;
+  color:rgba(0,0,0,.75);
+}
+.cart-figma-divider{
+  height:1px;
+  background:rgba(0,0,0,.08);
+  margin:12px 0;
+}
+.total-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+.total-label{
+  font-size:13px;
+  font-weight:700;
+  color:rgba(0,0,0,.8);
+}
+.saving{
+  margin-top:4px;
+  font-size:11px;
+  color:rgba(0,0,0,.35);
+}
+.total-val{
+  font-size:14px;
+  font-weight:700;
+  color:#111;
+}
+
+/* checkout button */
+.cart-figma-checkout{
+  margin-top:14px;
+  width:100%;
+  height:44px;
+  border:0;
+  border-radius:12px;          /* ✅ 둥근 정도 줄임 */
+  background:#111;
+  color:#fff;
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+.cart-figma-checkout:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+/* skeleton helpers */
+.skeleton{ background:rgba(0,0,0,.08); }
+.skeleton.line{ height:10px; border-radius:8px; }
+.skeleton.pill{ height:34px; width:110px; border-radius:10px; }
+.w-3\/4{ width:75%; }
+.w-2\/5{ width:40%; }
+
+.cart-figma-pad{ padding:0 16px 16px; }
+.cart-figma-empty,
+.cart-figma-error{
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:12px;          /* ✅ 둥근 정도 줄임 */
+  padding:16px;
+}
+.empty-title{ font-size:13px; font-weight:700; color:rgba(0,0,0,.75); }
+.empty-desc{ font-size:12px; color:rgba(0,0,0,.45); margin-top:6px; }
+.err-title{ font-size:13px; font-weight:700; color:#e11d48; }
+.err-msg{ margin-top:8px; font-size:11px; color:rgba(0,0,0,.55); white-space:pre-wrap; }
+.retry{
+  margin-top:10px;
+  height:38px;
+  padding:0 14px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,.15);
+  background:#fff;
+  cursor:pointer;
+  font-weight:600;
+  font-size:12px;
+}
+
+/* =========================================================
+   EXTRA (optional shared buttons)
+========================================================= */
+.btn-primary {
+  width: 100%;
+  border-radius: 12px;
+  background: #111;
+  color: #fff;
+  padding: 12px 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.btn-primary:hover { opacity: .95; }
+.btn-primary:active { transform: scale(.99); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-outline {
+  width: 100%;
+  border-radius: 12px;
+  background: #fff;
+  color: #111;
+  padding: 12px 16px;
+  font-weight: 600;
+  border: 1px solid rgba(0,0,0,.15);
+  cursor: pointer;
+  transition: background 120ms ease, transform 120ms ease;
+}
+.btn-outline:hover { background: rgba(0,0,0,.04); }
+.btn-outline:active { transform: scale(.99); }
+.btn-outline:disabled { opacity: .5; cursor: not-allowed; }

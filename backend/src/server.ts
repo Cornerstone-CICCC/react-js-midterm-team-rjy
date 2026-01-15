@@ -1,25 +1,29 @@
 import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
 import cors from "cors";
 import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
 
+import productRoutes from "./routes/productRoutes";
+import cartRoutes from "./routes/cartRoutes";
+import devRoutes from "./routes/devRoutes";
+import { seedProductsIfEmpty } from "./seed/productsSeed";
+
 dotenv.config();
 
-// Create server
 const app = express();
 
-// Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", 
-    methods: ["GET", "POST"],
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
+// ✅ 1) body parser 먼저
+app.use(express.json());
+
+// ✅ 2) cookie-session 세팅 (json 다음이어도 OK, routes 전에만 있으면 됨)
 if (!process.env.COOKIE_PRIMARY_KEY || !process.env.COOKIE_SECONDARY_KEY) {
   throw new Error("Missing cookie keys!");
 }
@@ -28,49 +32,24 @@ app.use(
   cookieSession({
     name: "session",
     keys: [process.env.COOKIE_PRIMARY_KEY, process.env.COOKIE_SECONDARY_KEY],
-    maxAge: 25 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 1000,
     sameSite: "lax",
     secure: false,
   })
 );
 
-app.use(express.json());
-
-// =======================
-// Routes (Products + Cart)
-// =======================
-import productRoutes from "./routes/productRoutes";
-import cartRoutes from "./routes/cartRoutes";
-
+// ✅ 3) routes는 마지막에 등록
+app.use("/api/dev", devRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 
-// =======================
-// Socket + Server
-// =======================
-const server = createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-  },
-});
-
-// =======================
-// MongoDB Connection
-// =======================
-const MONGO_URI = process.env.DATABASE_URL as string;
-
 mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("Connected to MongoDB");
+  .connect(process.env.DATABASE_URL as string)
+  .then(async () => {
+    console.log("✅ MongoDB connected");
+    await seedProductsIfEmpty();
 
     const PORT = process.env.PORT || 3000;
-    server.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-    });
+    app.listen(PORT, () => console.log(`🚀 http://localhost:${PORT}`));
   })
-  .catch((error) => {
-    console.error("MongoDB connection error:", error);
-  });
+  .catch((err) => console.error("❌ MongoDB error:", err));

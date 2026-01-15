@@ -1,65 +1,55 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const http_1 = require("http");
-const socket_io_1 = require("socket.io");
 const cors_1 = __importDefault(require("cors"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const cookie_session_1 = __importDefault(require("cookie-session"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
+const cartRoutes_1 = __importDefault(require("./routes/cartRoutes"));
+const devRoutes_1 = __importDefault(require("./routes/devRoutes"));
+const productsSeed_1 = require("./seed/productsSeed");
 dotenv_1.default.config();
-// Create server
 const app = (0, express_1.default)();
-// Middleware
 app.use((0, cors_1.default)({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
     credentials: true,
 }));
+// ✅ 1) body parser 먼저
+app.use(express_1.default.json());
+// ✅ 2) cookie-session 세팅 (json 다음이어도 OK, routes 전에만 있으면 됨)
 if (!process.env.COOKIE_PRIMARY_KEY || !process.env.COOKIE_SECONDARY_KEY) {
     throw new Error("Missing cookie keys!");
 }
 app.use((0, cookie_session_1.default)({
     name: "session",
     keys: [process.env.COOKIE_PRIMARY_KEY, process.env.COOKIE_SECONDARY_KEY],
-    maxAge: 25 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 1000,
     sameSite: "lax",
     secure: false,
 }));
-app.use(express_1.default.json());
-// =======================
-// Routes (Products + Cart)
-// =======================
-const productRoutes_1 = __importDefault(require("./routes/productRoutes"));
-const cartRoutes_1 = __importDefault(require("./routes/cartRoutes"));
+// ✅ 3) routes는 마지막에 등록
+app.use("/api/dev", devRoutes_1.default);
 app.use("/api/products", productRoutes_1.default);
 app.use("/api/cart", cartRoutes_1.default);
-// =======================
-// Socket + Server
-// =======================
-const server = (0, http_1.createServer)(app);
-const io = new socket_io_1.Server(server, {
-    cors: {
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST"],
-    },
-});
-// =======================
-// MongoDB Connection
-// =======================
-const MONGO_URI = process.env.DATABASE_URL;
 mongoose_1.default
-    .connect(MONGO_URI)
-    .then(() => {
-    console.log("Connected to MongoDB");
+    .connect(process.env.DATABASE_URL)
+    .then(() => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("✅ MongoDB connected");
+    yield (0, productsSeed_1.seedProductsIfEmpty)();
     const PORT = process.env.PORT || 3000;
-    server.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
-    });
-})
-    .catch((error) => {
-    console.error("MongoDB connection error:", error);
-});
+    app.listen(PORT, () => console.log(`🚀 http://localhost:${PORT}`));
+}))
+    .catch((err) => console.error("❌ MongoDB error:", err));
