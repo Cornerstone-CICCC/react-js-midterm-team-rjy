@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const Product_model_1 = __importDefault(require("../models/Product.model"));
+const product_model_1 = __importDefault(require("../models/product.model"));
 const productsSeed_1 = require("../seed/productsSeed");
 const router = (0, express_1.Router)();
 // ✅ 개발 환경에서만 허용
@@ -29,7 +29,7 @@ router.use((req, res, next) => {
  */
 router.delete("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield Product_model_1.default.deleteMany({});
+        const result = yield product_model_1.default.deleteMany({});
         res.json({ deletedCount: result.deletedCount });
     }
     catch (e) {
@@ -44,7 +44,7 @@ router.delete("/products", (req, res) => __awaiter(void 0, void 0, void 0, funct
 router.post("/seed-products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, productsSeed_1.seedProductsForce)();
-        const products = yield Product_model_1.default.find();
+        const products = yield product_model_1.default.find();
         res.status(201).json({ count: products.length, products });
     }
     catch (e) {

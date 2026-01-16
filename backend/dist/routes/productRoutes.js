@@ -13,14 +13,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const Product_model_1 = __importDefault(require("../models/Product.model"));
+const product_model_1 = __importDefault(require("../models/product.model"));
 const router = (0, express_1.Router)();
 /* =======================
    GET all products
 ======================= */
 router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const products = yield Product_model_1.default.find();
+        const products = yield product_model_1.default.find();
         res.json(products);
     }
     catch (error) {
@@ -33,7 +33,7 @@ router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 ======================= */
 router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const product = yield Product_model_1.default.findById(req.params.id);
+        const product = yield product_model_1.default.findById(req.params.id);
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
@@ -50,7 +50,7 @@ router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, price, imageUrl, description } = req.body;
-        const newProduct = new Product_model_1.default({
+        const newProduct = new product_model_1.default({
             name,
             price,
             imageUrl,

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import Product from "../models/Product.model";
+import Product from "../models/product.model";
 import { seedProductsForce } from "../seed/productsSeed";
 
 const router = Router();

@@ -1,117 +1,44 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const Cart_model_1 = __importDefault(require("../models/Cart.model"));
-const Product_model_1 = __importDefault(require("../models/Product.model"));
+const cartController = __importStar(require("../controllers/cart.controller"));
 const router = (0, express_1.Router)();
-/**
- * GET /api/cart
- * - 장바구니 전체 조회 (product populate)
- */
-router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const items = yield Cart_model_1.default.find().populate("productId");
-        res.json(items);
-    }
-    catch (e) {
-        console.error(e);
-        res.status(500).json({ message: "Failed to fetch cart" });
-    }
-}));
-/**
- * POST /api/cart/add
- * body: { productId: string, quantity?: number }
- * - 이미 있으면 quantity 증가, 없으면 새로 생성
- */
-router.post("/add", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { productId, quantity } = req.body;
-        if (!productId) {
-            return res.status(400).json({ message: "productId is required" });
-        }
-        // product 존재 확인(안전)
-        const productExists = yield Product_model_1.default.findById(productId);
-        if (!productExists) {
-            return res.status(404).json({ message: "Product not found" });
-        }
-        const qty = Math.max(1, Number(quantity !== null && quantity !== void 0 ? quantity : 1));
-        const existing = yield Cart_model_1.default.findOne({ productId });
-        if (existing) {
-            existing.quantity += qty;
-            yield existing.save();
-            return res.status(200).json(existing);
-        }
-        const created = yield Cart_model_1.default.create({ productId, quantity: qty });
-        res.status(201).json(created);
-    }
-    catch (e) {
-        console.error(e);
-        res.status(500).json({ message: "Failed to add to cart" });
-    }
-}));
-/**
- * PATCH /api/cart/:id
- * body: { quantity: number }
- */
-router.patch("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { quantity } = req.body;
-        const qty = Number(quantity);
-        if (!Number.isFinite(qty) || qty < 1) {
-            return res.status(400).json({ message: "quantity must be >= 1" });
-        }
-        const updated = yield Cart_model_1.default.findByIdAndUpdate(req.params.id, { quantity: qty }, { new: true });
-        if (!updated) {
-            return res.status(404).json({ message: "Cart item not found" });
-        }
-        res.json(updated);
-    }
-    catch (e) {
-        console.error(e);
-        res.status(500).json({ message: "Failed to update cart item" });
-    }
-}));
-/**
- * DELETE /api/cart/:id
- * - 아이템 1개 삭제
- */
-router.delete("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const deleted = yield Cart_model_1.default.findByIdAndDelete(req.params.id);
-        if (!deleted) {
-            return res.status(404).json({ message: "Cart item not found" });
-        }
-        res.json({ message: "Deleted", id: req.params.id });
-    }
-    catch (e) {
-        console.error(e);
-        res.status(500).json({ message: "Failed to delete cart item" });
-    }
-}));
-/**
- * DELETE /api/cart
- * - 장바구니 전체 비우기(개발 편의)
- */
-router.delete("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield Cart_model_1.default.deleteMany({});
-        res.json({ deletedCount: result.deletedCount });
-    }
-    catch (e) {
-        console.error(e);
-        res.status(500).json({ message: "Failed to clear cart" });
-    }
-}));
+router.get("/", cartController.getCart);
+// 프론트엔드의 fetch("/api/cart", { method: "POST" })와 맞추기 위해 경로를 "/"로 수정
+router.post("/", cartController.addToCart);
+router.patch("/:id", cartController.updateCartItem);
+router.delete("/:id", cartController.deleteCartItem);
 exports.default = router;
