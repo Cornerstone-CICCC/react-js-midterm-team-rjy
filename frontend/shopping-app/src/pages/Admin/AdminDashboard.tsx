@@ -85,7 +85,7 @@ const AdminDashboard = () => {
           </li>
         ))}
       </ul>
-      <button onClick={() => navigate("/admin/products/new")} className="bg-slate-900 fixed bottom-5 right-5 z-10 size-12 rounded-full flex items-center justify-center">
+      <button onClick={() => navigate("/admin/products/new")} className="bg-slate-900 fixed bottom-5 right-5 z-10 size-12 rounded-full flex items-center justify-center hover:bg-slate-800 hover:cursor-pointer hover:scale-110 transition">
         <IoIosAdd className="fill-white size-6" />
       </button>
     </div>
