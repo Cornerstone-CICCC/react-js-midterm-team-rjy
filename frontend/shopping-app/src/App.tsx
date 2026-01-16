@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { Toaster } from "react-hot-toast"; 
+import { Toaster } from "react-hot-toast";
 
 import Home from "./components/Home";
 import MainProducts from "./pages/MainProducts";
@@ -16,11 +16,12 @@ import AdminProductEdit from "./pages/Admin/AdminProductEdit";
 import Checkout from "./components/Checkout";
 import Confirmation from "./components/Confirmation";
 import BottomNav from "./components/BottomNav";
-import ProductDetail from "./pages/ProductsDetail"; 
+import ProductDetail from "./pages/ProductsDetail"; // ✅ 상세 페이지 임포트
 
 function AppContent() {
   const location = useLocation();
 
+  // 하단 바를 숨기고 싶은 경로
   const hideNavPaths = ["/", "/signup", "/signin", "/success"];
   const shouldShowNav = !hideNavPaths.includes(location.pathname);
 
@@ -40,13 +41,15 @@ function AppContent() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/confirmation" element={<Confirmation />} />
 
+        {/* 관리자 페이지 */}
         <Route path="/admin/products" element={<AdminDashboard />} />
         <Route path="/admin/products/new" element={<AdminProductNew />} />
         <Route path="/admin/products/edit/:id" element={<AdminProductEdit />} />
       </Routes>
 
       {shouldShowNav && <BottomNav />}
-      <Toaster position="bottom-center" /> 
+
+      <Toaster position="bottom-center" />
     </div>
   );
 }
