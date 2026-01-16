@@ -45,14 +45,16 @@ const AdminProductForm = ({
 
   return (
     <div className="text-slate-900">
-      <div className="flex justify-between border-b border-slate-200 p-4">
-        <button onClick={handleBack}>
-          <IoIosArrowBack />
-        </button>
-        <h1 className="font-[Lora] font-medium text-lg">{formTitle}</h1>
-        <span className="w-4"></span>
-      </div>
-      <form onSubmit={handleSubmit} className="p-5">
+      <header className="border-b border-slate-200">
+        <div className="flex justify-between p-4 md:max-w-4xl md:mx-auto">
+          <button onClick={handleBack} className="hover:opacity-50 hover:cursor-pointer trnasition">
+            <IoIosArrowBack />
+          </button>
+          <h1 className="font-[Lora] font-medium text-lg">{formTitle}</h1>
+          <span className="w-4"></span>
+        </div>
+      </header>
+      <form onSubmit={handleSubmit} className="p-5 md:max-w-4xl md:mx-auto">
         <div>
           <label className="text-sm">Name</label>
           <input
@@ -61,7 +63,7 @@ const AdminProductForm = ({
             value={formData.name}
             onChange={handleChange}
             placeholder="Product name"
-            className="w-full bg-slate-200 rounded-md p-3 mt-1 mb-3"
+            className="w-full bg-slate-200 rounded-md p-3 mt-1 mb-3 border border-slate-200 outline-none focus:border-slate-900"
           />
         </div>
         <div>
@@ -69,10 +71,11 @@ const AdminProductForm = ({
           <input
             name="price"
             type="number"
+            min="0"
             value={formData.price}
             onChange={handleChange}
             placeholder="Product price"
-            className="w-full bg-slate-200 rounded-md p-3 mt-1 mb-3"
+            className="w-full bg-slate-200 rounded-md p-3 mt-1 mb-3 border border-slate-200 outline-none focus:border-slate-900"
           />
         </div>
         <div>
@@ -83,7 +86,7 @@ const AdminProductForm = ({
             value={formData.imageUrl}
             onChange={handleChange}
             placeholder="Product Image URL"
-            className="w-full bg-slate-200 rounded-md p-3 mt-1 mb-3"
+            className="w-full bg-slate-200 rounded-md p-3 mt-1 mb-3 border border-slate-200 outline-none focus:border-slate-900"
           />
         </div>
         <div>
@@ -93,10 +96,10 @@ const AdminProductForm = ({
             value={formData.description}
             onChange={handleChange}
             placeholder="Product description"
-            className="w-full bg-slate-200 rounded-md p-3 mt-1 mb-8"
+            className="w-full bg-slate-200 rounded-md p-3 mt-1 mb-8 border border-slate-200 outline-none focus:border-slate-900"
           />
         </div>
-        <button type="submit" className="bg-slate-900 text-white rounded-md p-4 w-full">{submitLabel}</button>
+        <button type="submit" className="bg-slate-900 text-white rounded-md p-4 w-full hover:bg-slate-800 hover:cursor-pointer transition">{submitLabel}</button>
       </form>
     </div>
   )
