@@ -5,14 +5,12 @@ export default function BottomNav() {
   const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
 
-  // 장바구니 데이터를 가져와서 총 수량(또는 품목 수) 계산
+  // 장바구니 데이터를 가져와서 총 수량 계산
   async function fetchCartCount() {
     try {
       const res = await fetch("http://localhost:3000/api/cart");
       if (res.ok) {
         const data = await res.json();
-        // 품목의 종류 수를 보여주고 싶으면 data.length, 
-        // 총 상품 개수를 보여주고 싶으면 reduce를 사용하세요.
         setCartCount(Array.isArray(data) ? data.length : 0);
       }
     } catch (error) {
@@ -22,9 +20,6 @@ export default function BottomNav() {
 
   useEffect(() => {
     fetchCartCount();
-    // 다른 페이지 이동이나 상태 변경 시 대응하기 위해 
-    // 실제 서비스에서는 Context API나 Redux를 쓰는 게 좋지만, 
-    // 현재 구조에서는 마운트될 때마다 가져오도록 설정했습니다.
   }, []);
 
   async function handleLogout() {
@@ -58,7 +53,7 @@ export default function BottomNav() {
         <img src="/assets/menu_icon.svg" className="w-6 h-6" alt="Menu" />
       </button>
 
-      {/* Cart (배지 추가됨) */}
+      {/* Cart */}
       <button
         onClick={() => navigate("/cart")}
         className="relative flex flex-col items-center text-slate-700 hover:text-slate-900"
@@ -71,9 +66,9 @@ export default function BottomNav() {
         )}
       </button>
 
-      {/* Favorites */}
+      {/* Favorites (경로 수정 완료: /checkout -> /likes) */}
       <button
-        onClick={() => navigate("/checkout")}
+        onClick={() => navigate("/likes")}
         className="flex flex-col items-center text-slate-700 hover:text-slate-900"
       >
         <img src="/assets/favorite_icon.svg" className="w-6 h-6" alt="Favorite" />
