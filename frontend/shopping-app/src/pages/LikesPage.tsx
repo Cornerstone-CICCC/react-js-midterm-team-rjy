@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast, Toaster } from "react-hot-toast";
 
 interface Product {
   _id: string;
@@ -10,21 +12,12 @@ interface Product {
 
 type Status = "loading" | "success" | "error";
 
-interface Props {
-  onSelectProduct?: (id: string) => void;
-  onAddedToCart?: () => void;
-}
-
 const LS_KEY = "favorites_product_ids";
 
-/* =========================
-   localStorage helpers
-========================= */
 function loadFavIds(): Set<string> {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    const arr = raw ? (JSON.parse(raw) as string[]) : [];
-    return new Set(arr);
+    return new Set(raw ? JSON.parse(raw) : []);
   } catch {
     return new Set();
   }
@@ -34,32 +27,20 @@ function saveFavIds(set: Set<string>) {
   localStorage.setItem(LS_KEY, JSON.stringify(Array.from(set)));
 }
 
-/* =========================
-   Favorites Page
-========================= */
-export default function Favorites({ onSelectProduct, onAddedToCart }: Props) {
+export default function Favorites() {
+  const navigate = useNavigate();
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState("");
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [favIds, setFavIds] = useState<Set<string>>(() => loadFavIds());
 
-  /* fetch all products */
   useEffect(() => {
     const load = async () => {
       try {
         setStatus("loading");
-        setError("");
-
-        const res = await fetch("http://localhost:3000/api/products", {
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`HTTP ${res.status} - ${text}`);
-        }
-
-        const data = (await res.json()) as Product[];
+        const res = await fetch("http://localhost:3000/api/products");
+        if (!res.ok) throw new Error("Failed to load products");
+        const data = await res.json();
         setAllProducts(data);
         setStatus("success");
       } catch (e) {
@@ -67,148 +48,127 @@ export default function Favorites({ onSelectProduct, onAddedToCart }: Props) {
         setError(e instanceof Error ? e.message : "Unknown error");
       }
     };
-
     load();
   }, []);
 
-  /* sync favorites across tabs */
-  useEffect(() => {
-    const onStorage = () => setFavIds(loadFavIds());
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  /* filter favorites */
   const favoriteProducts = useMemo(
     () => allProducts.filter((p) => favIds.has(p._id)),
     [allProducts, favIds]
   );
 
-  /* toggle heart */
   const toggleFavorite = (productId: string) => {
     setFavIds((prev) => {
       const next = new Set(prev);
-      if (next.has(productId)) next.delete(productId);
-      else next.add(productId);
+      if (next.has(productId)) {
+        next.delete(productId);
+        toast("Removed from wishlist", { position: "top-center" });
+      } else {
+        next.add(productId);
+        toast.success("Added to wishlist! ❤️", { position: "top-center" });
+      }
       saveFavIds(next);
       return next;
     });
   };
 
-  /* add to cart */
   const addToCart = async (productId: string) => {
-    const res = await fetch("http://localhost:3000/api/cart/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ productId, quantity: 1 }),
-    });
-
-    if (!res.ok) {
-      const t = await res.text();
-      throw new Error(t || "Failed to add to cart");
+    try {
+      const res = await fetch("http://localhost:3000/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, quantity: 1 }),
+      });
+      if (res.ok) {
+        toast.success("Added to cart!", { position: "top-center" });
+      } else {
+        throw new Error();
+      }
+    } catch {
+      toast.error("Failed to add to cart");
     }
-
-    onAddedToCart?.();
   };
 
-  /* =========================
-     Render states
-  ========================= */
-  if (status === "loading") {
-    return <p className="text-sm text-black/60">Loading…</p>;
-  }
+  if (status === "loading") return <div className="p-10 text-center font-['Lora']">Loading...</div>;
 
-  if (status === "error") {
-    return (
-      <div className="text-sm text-red-600">
-        <div>Could not load favorites.</div>
-        <pre className="mt-2 text-xs whitespace-pre-wrap text-black/70">
-          {error}
-        </pre>
-      </div>
-    );
-  }
-
-  if (favoriteProducts.length === 0) {
-    return <div className="text-sm text-black/60">No favorites yet.</div>;
-  }
-
-  /* =========================
-     Grid + Card (통합)
-  ========================= */
   return (
-    <div className="px-4">
-      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-        {favoriteProducts.map((p) => {
-          const liked = favIds.has(p._id);
+    <div className="bg-white min-h-screen pb-24 font-['Lora'] serif overflow-x-hidden">
+      <Toaster />
+      
+      {/* 대화면 대응을 위한 중앙 정렬 컨테이너 (최대 너비 1200px) */}
+      <div className="max-w-[1200px] mx-auto px-6 lg:px-10">
+        
+        {/* Header: 상품 리스트(/shop) 이동 버튼과 타이틀 */}
+        <header className="py-8 lg:py-14 flex items-center justify-between">
+          <button onClick={() => navigate('/shop')} className="text-xl lg:text-3xl hover:opacity-50 transition-opacity">
+            <i className="fa-solid fa-chevron-left" />
+          </button>
+          <h1 className="text-[20px] lg:text-[32px] font-black uppercase tracking-tight">Wishlist</h1>
+          <div className="w-6 lg:w-10" /> {/* balance */}
+        </header>
 
-          return (
-            <div key={p._id} className="select-none">
-              {/* 이미지 카드 */}
-              <button
-                type="button"
-                onClick={() => onSelectProduct?.(p._id)}
-                className="w-full rounded-[12px] overflow-hidden bg-black/5 border border-black/10"
-              >
-                <div className="aspect-[3/4] w-full bg-black/5">
-                  <img
-                    src={p.imageUrl}
-                    alt={p.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              </button>
-
-              {/* 가격 + 하트 */}
-              <div className="mt-2 flex items-center justify-between">
-                <div className="text-[12px] text-black/60">
-                  {p.price.toFixed(2)}$
-                </div>
-
-                <button
-                  type="button"
-                  aria-label="toggle favorite"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(p._id);
-                  }}
-                  className="w-8 h-8 grid place-items-center rounded-full hover:bg-black/5"
+        {favoriteProducts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center pt-20 lg:pt-40 text-gray-400">
+            <i className="fa-regular fa-heart text-5xl lg:text-8xl mb-6 opacity-20" />
+            <p className="text-[16px] lg:text-[20px]">Your wishlist is empty.</p>
+            <button 
+              onClick={() => navigate('/shop')}
+              className="mt-6 px-8 py-3 bg-black text-white rounded-full text-sm font-bold"
+            >
+              Go Shopping
+            </button>
+          </div>
+        ) : (
+          /* Products 그리드: 모바일 2열 / 데스크탑 4열 고정 */
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 lg:gap-x-10 gap-y-10 lg:gap-y-20">
+            {favoriteProducts.map((p) => (
+              <div key={p._id} className="relative group">
+                {/* 이미지 카드 - 굴곡 및 호버 효과 */}
+                <div 
+                  className="relative aspect-[3/4] rounded-[20px] lg:rounded-[30px] overflow-hidden bg-gray-50 mb-4 cursor-pointer shadow-sm transition-transform duration-500 group-hover:-translate-y-2"
                 >
-                  <i
-                    className={`${
-                      liked ? "fa-solid" : "fa-regular"
-                    } fa-heart`}
+                  <img 
+                    src={p.imageUrl} 
+                    className="w-full h-full object-cover" 
+                    alt={p.name} 
+                    onClick={() => navigate(`/product/${p._id}`)}
                   />
-                </button>
-              </div>
+                  
+                  {/* 하트 버튼 - 상단 우측 고정 */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(p._id);
+                    }}
+                    className="absolute top-3 right-3 lg:top-5 lg:right-5 w-8 h-8 lg:w-10 lg:h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:scale-110 transition-transform"
+                  >
+                    <i className="fa-solid fa-heart text-red-500 text-sm lg:text-lg" />
+                  </button>
+                </div>
 
-              {/* 상품명 */}
-              <div className="mt-1 text-[12px] leading-snug text-black/70 line-clamp-2">
-                {p.name}
-              </div>
+                {/* 가격 및 이름 정보 */}
+                <div className="px-1">
+                  <div className="text-[17px] lg:text-[22px] font-black text-black mb-1">
+                    ${p.price.toFixed(2)}
+                  </div>
+                  <div className="text-[13px] lg:text-[16px] text-gray-500 font-medium line-clamp-1 mb-4 group-hover:text-black transition-colors">
+                    {p.name}
+                  </div>
 
-              {/* Add to cart */}
-              <button
-                type="button"
-                onClick={async (e) => {
-                  e.stopPropagation();
-                  try {
-                    await addToCart(p._id);
-                  } catch (err) {
-                    console.error(err);
-                    alert("Add to cart failed");
-                  }
-                }}
-                className="mt-2 w-full h-9 rounded-[10px] bg-black text-white text-[12px] font-semibold flex items-center justify-center gap-2"
-              >
-                <i className="fa-solid fa-cart-shopping" />
-                Add to cart
-              </button>
-            </div>
-          );
-        })}
+                  {/* Add to Cart 버튼 */}
+                  <button
+                    onClick={() => addToCart(p._id)}
+                    className="w-full py-3 lg:py-4 rounded-[12px] lg:rounded-[15px] bg-black text-white text-[12px] lg:text-[14px] font-bold active:scale-95 transition-all hover:bg-gray-800"
+                  >
+                    Add to cart
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 하단 여백 */}
+        <div className="h-20 lg:h-40" />
       </div>
     </div>
   );

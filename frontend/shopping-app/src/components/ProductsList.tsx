@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SearchModal from "./SearchModal";
+import SearchModal from "./SearchModal"; // 경로 확인: ./ 또는 ../components/
 import type { SearchProduct } from "./SearchModal";
 
 interface Product extends SearchProduct {
-  category: string;
+  category?: string; // category가 없을 수도 있으므로 ? 추가
 }
 
 const BANNER_IMAGES = [
@@ -31,81 +31,93 @@ export default function ProductsList() {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + BANNER_IMAGES.length) % BANNER_IMAGES.length);
 
   const categories = ["All", "Tops", "Bottoms", "Outerwear", "Dresses"];
+
+  // [에러 방지 핵심 로직] p.category가 있을 때만 toLowerCase()를 실행하도록 수정
   const filteredProducts = selectedCategory === "All" 
     ? products 
-    : products.filter(p => p.category === selectedCategory);
+    : products.filter((p) => 
+        p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()
+      );
 
   return (
-    <div className="bg-white min-h-screen pb-20 font-sans overflow-x-hidden">
-      {/* 1. Header: BOUTIQUE 중앙 배치 */}
-      <header className="relative flex items-center justify-center px-6 py-6 bg-white">
-        <h1 className="text-[24px] font-black tracking-tighter text-black uppercase">BOUTIQUE</h1>
-        <button 
-          onClick={() => setIsSearchOpen(true)}
-          className="absolute right-6 p-2"
-        >
-          <i className="fa-solid fa-magnifying-glass text-[22px] text-black" />
-        </button>
-      </header>
-
-      {/* 2. 메인 슬라이더: 사진 클릭 시 상세페이지 이동 */}
-      <div className="relative w-full h-[480px] overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-30 transition-all duration-700"
-          style={{ backgroundImage: `url(${BANNER_IMAGES[currentSlide]})` }}
-        />
+    <div className="bg-white min-h-screen pb-20 font-['Lora'] serif overflow-x-hidden">
+      {/* 1. Header & 중앙 정렬 컨테이너 시작 */}
+      <div className="max-w-[1200px] mx-auto">
         
-        <div className="relative h-full flex items-center justify-center px-10">
-          <div 
-            onClick={() => {
-              // 상품이 있으면 해당 ID로, 없으면 테스트용 ID '1'로 이동
-              const targetId = products.length > 0 ? products[currentSlide % products.length]._id : "1";
-              navigate(`/product/${targetId}`);
-            }}
-            className="w-full max-w-[280px] aspect-[3/4.5] rounded-[50px] overflow-hidden shadow-2xl z-10 cursor-pointer active:scale-95 transition-transform"
+        <header className="relative flex items-center justify-center px-6 py-6 lg:py-10 bg-white">
+          <h1 className="text-[24px] lg:text-[32px] font-black tracking-tighter text-black uppercase">BOUTIQUE</h1>
+          <button 
+            onClick={() => setIsSearchOpen(true)}
+            className="absolute right-6 lg:right-10 p-2"
           >
-            <img src={BANNER_IMAGES[currentSlide]} className="w-full h-full object-cover" alt="Main" />
-          </div>
-
-          <button onClick={prevSlide} className="absolute left-4 z-20 text-black/10 hover:text-black">
-            <i className="fa-solid fa-chevron-left text-3xl" />
+            <i className="fa-solid fa-magnifying-glass text-[22px] lg:text-[28px] text-black" />
           </button>
-          <button onClick={nextSlide} className="absolute right-4 z-20 text-black/10 hover:text-black">
-            <i className="fa-solid fa-chevron-right text-3xl" />
-          </button>
-        </div>
-      </div>
+        </header>
 
-      {/* 3. Categories 섹션 */}
-      <div className="px-6 mt-12">
-        <h2 className="text-[20px] font-bold text-black mb-6">Categories</h2>
-        <div className="flex gap-8 overflow-x-auto no-scrollbar pb-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className="relative flex flex-col items-center flex-shrink-0"
+        {/* 2. 메인 슬라이더 (너비 고정) */}
+        <div className="relative w-full h-[480px] lg:h-[650px] overflow-hidden lg:rounded-[40px]">
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-30 transition-all duration-700"
+            style={{ backgroundImage: `url(${BANNER_IMAGES[currentSlide]})` }}
+          />
+          
+          <div className="relative h-full flex items-center justify-center px-10">
+            <div 
+              onClick={() => {
+                const targetId = products.length > 0 ? products[currentSlide % products.length]._id : "1";
+                navigate(`/product/${targetId}`);
+              }}
+              className="w-full max-w-[280px] lg:max-w-[380px] aspect-[3/4.5] rounded-[30px] lg:rounded-[45px] overflow-hidden shadow-2xl z-10 cursor-pointer active:scale-95 transition-transform"
             >
-              <span className={`text-[16px] ${selectedCategory === cat ? "font-bold text-black" : "text-gray-400"}`}>
-                {cat}
-              </span>
-              {selectedCategory === cat && <div className="w-1 h-1 bg-black rounded-full mt-1" />}
+              <img src={BANNER_IMAGES[currentSlide]} className="w-full h-full object-cover" alt="Main" />
+            </div>
+
+            <button onClick={prevSlide} className="absolute left-4 lg:left-12 z-20 text-black/10 hover:text-black">
+              <i className="fa-solid fa-chevron-left text-3xl lg:text-5xl" />
             </button>
+            <button onClick={nextSlide} className="absolute right-4 lg:right-12 z-20 text-black/10 hover:text-black">
+              <i className="fa-solid fa-chevron-right text-3xl lg:text-5xl" />
+            </button>
+          </div>
+        </div>
+
+        {/* 3. Categories 섹션 */}
+        <div className="px-6 lg:px-10 mt-12 lg:mt-20">
+          <h2 className="text-[20px] lg:text-[28px] font-bold text-black mb-6">Categories</h2>
+          <div className="flex gap-8 lg:gap-14 overflow-x-auto no-scrollbar pb-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className="relative flex flex-col items-center flex-shrink-0"
+              >
+                <span className={`text-[16px] lg:text-[18px] transition-colors ${selectedCategory === cat ? "font-bold text-black" : "text-gray-400"}`}>
+                  {cat}
+                </span>
+                {selectedCategory === cat && <div className="w-1 h-1 bg-black rounded-full mt-1" />}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 4. Products 그리드 (데스크탑 4열 고정) */}
+        <div className="px-6 lg:px-10 mt-10 lg:mt-16 grid grid-cols-2 lg:grid-cols-4 gap-x-5 lg:gap-x-8 gap-y-12 lg:gap-y-20">
+          {filteredProducts.map((product) => (
+            <div 
+              key={product._id} 
+              onClick={() => navigate(`/product/${product._id}`)} 
+              className="group cursor-pointer"
+            >
+              <div className="relative aspect-[3/4] rounded-[20px] lg:rounded-[30px] overflow-hidden bg-gray-50 mb-4 shadow-sm">
+                <img src={product.imageUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={product.name} />
+              </div>
+              <div className="text-[16px] lg:text-[19px] font-black text-black mb-1">{product.price.toFixed(2)}$</div>
+              <div className="text-[13px] lg:text-[15px] text-gray-500 font-medium line-clamp-1">{product.name}</div>
+            </div>
           ))}
         </div>
-      </div>
 
-      {/* 4. Products 그리드 */}
-      <div className="px-6 mt-10 grid grid-cols-2 gap-x-5 gap-y-12">
-        {filteredProducts.map((product) => (
-          <div key={product._id} onClick={() => navigate(`/product/${product._id}`)} className="group cursor-pointer">
-            <div className="relative aspect-[3/4] rounded-[30px] overflow-hidden bg-gray-50 mb-4 shadow-sm">
-              <img src={product.imageUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-            </div>
-            <div className="text-[16px] font-black text-black mb-1">{product.price.toFixed(2)}$</div>
-            <div className="text-[13px] text-gray-500 font-medium line-clamp-1">{product.name}</div>
-          </div>
-        ))}
+        <div className="h-20" />
       </div>
 
       <SearchModal 
