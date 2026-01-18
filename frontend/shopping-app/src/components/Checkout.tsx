@@ -1,10 +1,14 @@
 import { useState, type FormEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "./BottomNav";
+import { useCart } from "../context/CartContext";
 
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const { subTotal, shipping, taxes, total } = useCart();
+
+  
 
   const [user, setUser] = useState({
     fullname: "Loading...",
@@ -154,24 +158,24 @@ export default function Checkout() {
 
                 <div className="flex justify-between text-slate-700">
                 <span>Subtotal</span>
-                <span>$120.00</span>
+                <span>${subTotal.toFixed(2)}</span>
                 </div>
 
                 <div className="flex justify-between text-slate-700">
                 <span>Shipping</span>
-                <span>$10.00</span>
+                <span>${shipping.toFixed(2)}</span>
                 </div>
 
                 <div className="flex justify-between text-slate-700">
                 <span>Taxes</span>
-                <span>$5.00</span>
+                <span>${taxes.toFixed(2)}</span>
                 </div>
 
                 <div className="h-[1px] w-full bg-slate-300 my-2" />
 
                 <div className="flex justify-between text-slate-900 font-semibold text-[17px]">
                 <span>Total</span>
-                <span>$135.00</span>
+                <span>${total.toFixed(2)}</span>
                 </div>
 
             </div>

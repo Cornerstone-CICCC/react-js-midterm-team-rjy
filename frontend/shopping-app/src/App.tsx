@@ -16,46 +16,122 @@ import Checkout from "./components/Checkout";
 import Confirmation from "./components/Confirmation";
 import BottomNav from "./components/BottomNav";
 import ProductDetail from "./pages/ProductsDetail"; // ✅ 상세 페이지 임포트
+import { CartProvider } from "./context/CartContext";
+import ValidateRoute from "./components/ValidateRoute";
 
 function AppContent() {
   const location = useLocation();
 
-  // 하단 바를 숨기고 싶은 경로
   const hideNavPaths = ["/", "/signup", "/signin", "/success"];
   const shouldShowNav = !hideNavPaths.includes(location.pathname);
 
   return (
     <div className={`min-h-screen ${shouldShowNav ? "pb-20" : ""}`}>
       <Routes>
+        {/* Públicas */}
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/success" element={<Success />} />
         <Route path="/shop" element={<MainProducts />} />
         <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/likes" element={<LikesPage />} />
-        <Route path="/success" element={<Success />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/confirmation" element={<Confirmation />} />
 
-        {/* 관리자 페이지 */}
-        <Route path="/admin/products" element={<AdminDashboard />} />
-        <Route path="/admin/products/new" element={<AdminProductNew />} />
-        <Route path="/admin/products/edit/:id" element={<AdminProductEdit />} />
+        {/* Protegidas */}
+        <Route
+          path="/cart"
+          element={
+            <ValidateRoute>
+              <CartPage />
+            </ValidateRoute>
+          }
+        />
+
+        <Route
+          path="/likes"
+          element={
+            <ValidateRoute>
+              <LikesPage />
+            </ValidateRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ValidateRoute>
+              <Profile />
+            </ValidateRoute>
+          }
+        />
+
+        <Route
+          path="/edit-profile"
+          element={
+            <ValidateRoute>
+              <EditProfile />
+            </ValidateRoute>
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <ValidateRoute>
+              <Checkout />
+            </ValidateRoute>
+          }
+        />
+
+        <Route
+          path="/confirmation"
+          element={
+            <ValidateRoute>
+              <Confirmation />
+            </ValidateRoute>
+          }
+        />
+
+        {/* Admin (si quieres protegerlos también) */}
+        <Route
+          path="/admin/products"
+          element={
+            <ValidateRoute>
+              <AdminDashboard />
+            </ValidateRoute>
+          }
+        />
+
+        <Route
+          path="/admin/products/new"
+          element={
+            <ValidateRoute>
+              <AdminProductNew />
+            </ValidateRoute>
+          }
+        />
+
+        <Route
+          path="/admin/products/edit/:id"
+          element={
+            <ValidateRoute>
+              <AdminProductEdit />
+            </ValidateRoute>
+          }
+        />
       </Routes>
 
       {shouldShowNav && <BottomNav />}
-
     </div>
   );
 }
 
+
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
     </BrowserRouter>
   );
 }
