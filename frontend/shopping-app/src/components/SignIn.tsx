@@ -25,7 +25,7 @@ export default function Signin() {
           return;
       }
       console.log("User signed in successfully:", data);
-      navigate("/profile");
+      navigate("/shop");
     }catch(error){
       console.error("Error during sign in:", error);
       return;
