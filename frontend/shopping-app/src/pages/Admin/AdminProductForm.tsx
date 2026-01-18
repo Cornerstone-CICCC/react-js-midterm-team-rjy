@@ -40,7 +40,7 @@ const AdminProductForm = ({
   }
 
   const handleBack = () => {
-    navigate('/admin/products')
+    navigate('/admin')
   }
 
   return (
