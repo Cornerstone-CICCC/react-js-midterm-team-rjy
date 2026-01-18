@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SearchModal from "./SearchModal"; // 경로 확인: ./ 또는 ../components/
 import type { SearchProduct } from "./SearchModal";
+import { RiToolsLine } from "react-icons/ri";
 
 interface Product extends SearchProduct {
   category?: string; // category가 없을 수도 있으므로 ? 추가
@@ -118,6 +119,9 @@ export default function ProductsList() {
         </div>
 
         <div className="h-20" />
+        <button onClick={() => navigate("/admin")} className="bg-slate-900 fixed bottom-16 right-5 z-10 size-12 rounded-full flex items-center justify-center hover:bg-slate-800 hover:cursor-pointer hover:scale-110 transition">
+          <RiToolsLine className="fill-white size-6" />
+        </button>
       </div>
 
       <SearchModal 

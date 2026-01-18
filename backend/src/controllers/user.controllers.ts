@@ -18,6 +18,7 @@ export const signUp = async (req: Request, res: Response) => {
         if(req.session) {
             req.session.userId = newUser._id.toString();
             req.session.isLoggedIn = true;
+            req.session.userRole = newUser.role
         }
 
         res.status(201).json({ message: "User created successfully", id: newUser._id,
@@ -52,11 +53,12 @@ export const logIn = async (req: Request, res: Response) => {
         if(req.session) {
             req.session.userId = user._id.toString();
             req.session.isLoggedIn = true;
+            req.session.userRole = user.role
         }
 
       res.status(200).json({
       message: "Login successful",
-      user: { id: user._id, fullname: user.fullname, email: user.email },
+      user: { id: user._id, fullname: user.fullname, email: user.email, role: user.role },
     });
 
     }catch (error) {

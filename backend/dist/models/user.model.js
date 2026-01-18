@@ -48,11 +48,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const role_1 = require("../types/role");
 const UserSchema = new mongoose_1.Schema({
     fullname: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ["user", "admin"], default: "user" },
+    role: { type: String, enum: Object.values(role_1.Role), default: role_1.Role.USER },
     address: { type: String }
 }, { timestamps: true });
 UserSchema.pre("save", function () {

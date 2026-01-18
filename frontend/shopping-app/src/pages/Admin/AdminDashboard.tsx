@@ -16,7 +16,11 @@ const AdminDashboard = () => {
           credentials: "include",
         })
         if(res.status === 403){
-          navigate('/profile')
+          navigate('/shop')
+          return
+        }
+        if(res.status === 401){
+          navigate('/signin')
           return
         }
         if(!res.ok) throw new Error('Failed to fetch products.');

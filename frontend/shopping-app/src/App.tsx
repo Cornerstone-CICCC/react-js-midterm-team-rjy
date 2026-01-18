@@ -23,7 +23,7 @@ function AppContent() {
   const location = useLocation();
 
   const hideNavPaths = ["/", "/signup", "/signin", "/success"];
-  const shouldShowNav = !hideNavPaths.includes(location.pathname);
+  const shouldShowNav = !location.pathname.startsWith("/admin") && !hideNavPaths.includes(location.pathname);
 
   return (
     <div className={`min-h-screen ${shouldShowNav ? "pb-20" : ""}`}>
