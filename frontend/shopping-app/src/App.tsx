@@ -28,15 +28,10 @@ function AppContent() {
   return (
     <div className={`min-h-screen ${shouldShowNav ? "pb-20" : ""}`}>
       <Routes>
-        {/* Públicas */}
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/success" element={<Success />} />
-        <Route path="/shop" element={<MainProducts />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-
-        {/* Protegidas */}
         <Route
           path="/cart"
           element={
@@ -90,34 +85,23 @@ function AppContent() {
             </ValidateRoute>
           }
         />
-
-        {/* Admin (si quieres protegerlos también) */}
         <Route
-          path="/admin/products"
+          path="/shop"
           element={
             <ValidateRoute>
-              <AdminDashboard />
+              <MainProducts />
             </ValidateRoute>
           }
         />
 
-        <Route
-          path="/admin/products/new"
-          element={
-            <ValidateRoute>
-              <AdminProductNew />
-            </ValidateRoute>
-          }
+        <Route path="/product/:id" 
+        element={
+          <ValidateRoute>
+            <ProductDetail />
+          </ValidateRoute>
+        } 
         />
 
-        <Route
-          path="/admin/products/edit/:id"
-          element={
-            <ValidateRoute>
-              <AdminProductEdit />
-            </ValidateRoute>
-          }
-        />
       </Routes>
 
       {shouldShowNav && <BottomNav />}
