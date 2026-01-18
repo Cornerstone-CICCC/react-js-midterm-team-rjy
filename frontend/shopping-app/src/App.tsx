@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
 
 import Home from "./components/Home";
 import MainProducts from "./pages/MainProducts";
@@ -49,7 +48,6 @@ function AppContent() {
 
       {shouldShowNav && <BottomNav />}
 
-      <Toaster position="bottom-center" />
     </div>
   );
 }
