@@ -30,7 +30,7 @@ export default function Success() {
       </div>
 
       <button
-        onClick={() => navigate("/profile")}
+        onClick={() => navigate("/shop")}
         className="w-full max-w-sm rounded-xl bg-slate-900 px-4 py-4 text-white text-[15px] font-medium shadow-sm hover:bg-slate-800 transition"
       >
         Start shopping
