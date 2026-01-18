@@ -50,7 +50,7 @@ const AdminDashboard = () => {
   }
 
   const handleBack = () => {
-    navigate('/profile')
+    navigate('/shop')
   }
 
   if(loading) return <p>Loading...</p>
