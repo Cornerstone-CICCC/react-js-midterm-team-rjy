@@ -32,6 +32,9 @@ function AppContent() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/success" element={<Success />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/product/new" element={<AdminProductNew />} />
+        <Route path="/admin/product/edit/:id" element={<AdminProductEdit />} />
         <Route
           path="/cart"
           element={
