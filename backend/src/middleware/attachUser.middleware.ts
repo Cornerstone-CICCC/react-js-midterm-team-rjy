@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../models/user.model";
+import { Role } from "../types/role";
 
-export const attachUser = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.session?.userId) return next();
+export const attachUser = (req: Request, res: Response, next: NextFunction) => {
+  const { userId, userRole } = req.session
+  if (!userId) {
+    return res.status(401).json({ message: "Not authenticated." });
+  }
 
-  if (!req.user) {
-    const user = await User.findById(req.session.userId).select("role");
-    if (user) {
-      req.user = { id: user._id.toString(), role: user.role };
-    }
+  req.user = {
+    id: userId,
+    role: userRole as Role,
   }
   next();
 }

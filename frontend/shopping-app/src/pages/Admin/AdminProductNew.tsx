@@ -15,7 +15,7 @@ const AdminProductNew = () => {
         body: JSON.stringify(data),
       })
       if(!res.ok) throw new Error("Failed to create new product.")
-      navigate("/admin/products")
+      navigate("/admin")
     } catch(err) {
       console.error(err)
       alert('Failed to create new product.')

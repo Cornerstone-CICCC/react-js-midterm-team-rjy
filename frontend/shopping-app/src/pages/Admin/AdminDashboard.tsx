@@ -16,7 +16,11 @@ const AdminDashboard = () => {
           credentials: "include",
         })
         if(res.status === 403){
-          navigate('/profile')
+          navigate('/shop')
+          return
+        }
+        if(res.status === 401){
+          navigate('/signin')
           return
         }
         if(!res.ok) throw new Error('Failed to fetch products.');
@@ -46,7 +50,7 @@ const AdminDashboard = () => {
   }
 
   const handleBack = () => {
-    navigate('/profile')
+    navigate('/shop')
   }
 
   if(loading) return <p>Loading...</p>
@@ -74,7 +78,7 @@ const AdminDashboard = () => {
                 <dd className="mt-2">${i.price}</dd>
               </dl>
               <div className="ml-auto flex gap-2">
-                <button onClick={() => navigate(`/admin/products/edit/${i._id}`)} className="border-2 border-slate-200 rounded-md p-2 hover:bg-[#4CD4711a] hover:cursor-pointer transition">
+                <button onClick={() => navigate(`/admin/product/edit/${i._id}`)} className="border-2 border-slate-200 rounded-md p-2 hover:bg-[#4CD4711a] hover:cursor-pointer transition">
                   <CiEdit className="fill-[#4CD47199] size-6" />
                 </button>
                 <button onClick={() => handleDelete(i._id)} className="border-2 border-slate-200 rounded-md p-2 hover:bg-[#D3180C1a] hover:cursor-pointer transition">
@@ -85,7 +89,7 @@ const AdminDashboard = () => {
           </li>
         ))}
       </ul>
-      <button onClick={() => navigate("/admin/products/new")} className="bg-slate-900 fixed bottom-5 right-5 z-10 size-12 rounded-full flex items-center justify-center hover:bg-slate-800 hover:cursor-pointer hover:scale-110 transition">
+      <button onClick={() => navigate("/admin/product/new")} className="bg-slate-900 fixed bottom-5 right-5 z-10 size-12 rounded-full flex items-center justify-center hover:bg-slate-800 hover:cursor-pointer hover:scale-110 transition">
         <IoIosAdd className="fill-white size-6" />
       </button>
     </div>

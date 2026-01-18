@@ -27,7 +27,7 @@ const AdminProductEdit = () => {
         body: JSON.stringify(data),
       })
       if(!res.ok) throw new Error("Failed to update product.")
-      navigate("/admin/products")
+      navigate("/admin")
     } catch(err) {
       console.error(err)
       alert('Failed to update product.')
