@@ -9,5 +9,6 @@ userRouter.post("/login", authLogout, userControllers.logIn);
 userRouter.post("/logout", authLogin, userControllers.logOut);
 userRouter.get("/profile", authLogin, userControllers.getCurrentUser);
 userRouter.put("/update-profile", authLogin, userControllers.updateProfile);
+userRouter.get("/me", authLogin, userControllers.getCurrentUser);
 
 export default userRouter;

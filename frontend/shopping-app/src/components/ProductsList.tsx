@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import SearchModal from "./SearchModal"; // 경로 확인: ./ 또는 ../components/
 import type { SearchProduct } from "./SearchModal";
 import { RiToolsLine } from "react-icons/ri";
+import { useAuth } from "../context/AuthContext";
 
 interface Product extends SearchProduct {
   category?: string; // category가 없을 수도 있으므로 ? 추가
@@ -39,6 +40,8 @@ export default function ProductsList() {
     : products.filter((p) => 
         p.category && p.category.toLowerCase() === selectedCategory.toLowerCase()
       );
+
+  const { user, loading } = useAuth()
 
   return (
     <div className="bg-white min-h-screen pb-20 font-['Lora'] serif overflow-x-hidden">
@@ -119,9 +122,11 @@ export default function ProductsList() {
         </div>
 
         <div className="h-20" />
-        <button onClick={() => navigate("/admin")} className="bg-slate-900 fixed bottom-16 right-5 z-10 size-12 rounded-full flex items-center justify-center hover:bg-slate-800 hover:cursor-pointer hover:scale-110 transition">
-          <RiToolsLine className="fill-white size-6" />
-        </button>
+        {!loading && user && user.role === "admin" && (
+          <button onClick={() => navigate("/admin")} className="bg-slate-900 fixed bottom-16 right-5 z-10 size-12 rounded-full flex items-center justify-center hover:bg-slate-800 hover:cursor-pointer hover:scale-110 transition">
+            <RiToolsLine className="fill-white size-6" />
+          </button>
+        )}
       </div>
 
       <SearchModal 

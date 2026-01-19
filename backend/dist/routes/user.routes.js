@@ -12,4 +12,5 @@ userRouter.post("/login", auth_middleware_1.authLogout, user_controllers_1.defau
 userRouter.post("/logout", auth_middleware_1.authLogin, user_controllers_1.default.logOut);
 userRouter.get("/profile", auth_middleware_1.authLogin, user_controllers_1.default.getCurrentUser);
 userRouter.put("/update-profile", auth_middleware_1.authLogin, user_controllers_1.default.updateProfile);
+userRouter.get("/me", auth_middleware_1.authLogin, user_controllers_1.default.getCurrentUser);
 exports.default = userRouter;
