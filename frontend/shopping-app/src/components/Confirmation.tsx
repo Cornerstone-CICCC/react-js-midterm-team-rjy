@@ -1,11 +1,17 @@
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useEffect } from "react";
 
 export default function Confirmation() {
   const navigate = useNavigate();
+  const { clearCart } = useCart();
+
+  useEffect(() => {
+    clearCart();
+  }, [clearCart]);
 
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col items-center justify-between pt-20 pb-6 px-6">
-
       <div className="flex flex-col items-center">
         <div className="w-24 h-24 rounded-full bg-emerald-100 flex items-center justify-center">
           <svg
