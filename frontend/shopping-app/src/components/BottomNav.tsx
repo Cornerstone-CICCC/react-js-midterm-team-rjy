@@ -1,26 +1,10 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";  // Agrega este import
 
 export default function BottomNav() {
   const navigate = useNavigate();
-  const [cartCount, setCartCount] = useState(0);
-
-  // 장바구니 데이터를 가져와서 총 수량 계산
-  async function fetchCartCount() {
-    try {
-      const res = await fetch("http://localhost:3000/api/cart");
-      if (res.ok) {
-        const data = await res.json();
-        setCartCount(Array.isArray(data) ? data.length : 0);
-      }
-    } catch (error) {
-      console.error("Failed to fetch cart count:", error);
-    }
-  }
-
-  useEffect(() => {
-    fetchCartCount();
-  }, []);
+  const { cartItems } = useCart();  
+  const cartCount = cartItems.length;  
 
   async function handleLogout() {
     try {
