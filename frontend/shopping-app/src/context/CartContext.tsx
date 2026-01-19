@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 type CartItem = {
   _id: string;
@@ -23,6 +23,7 @@ type CartContextType = {
   addToCart: (productId: string, quantity: number) => Promise<void>;
   removeFromCart: (cartItemId: string) => Promise<void>;
   updateQty: (cartItemId: string, qty: number) => Promise<void>;
+  clearCart: () => void; 
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -41,21 +42,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const taxes = subTotal * taxRate;
   const total = subTotal + shipping + taxes;
 
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
       const res = await fetch("http://localhost:3000/api/cart", {
         credentials: "include",
       });
       const data = await res.json();
-      if (Array.isArray(data)) setCartItems(data);
+      if (Array.isArray(data)) {
+        setCartItems(data);
+      }
     } catch (error) {
       console.error("Error fetching cart:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [fetchCart]);
 
   const addToCart = async (productId: string, quantity: number) => {
     try {
@@ -124,6 +127,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const clearCart = useCallback(() => {
+    setCartItems([]); 
+  }, []);
+
   return (
     <CartContext.Provider
       value={{
@@ -136,6 +143,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         addToCart,
         removeFromCart,
         updateQty,
+        clearCart,
       }}
     >
       {children}
