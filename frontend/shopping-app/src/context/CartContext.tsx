@@ -20,7 +20,7 @@ type CartContextType = {
   shipping: number;
   taxes: number;
   fetchCart: () => Promise<void>;
-  addToCart: (productId: string) => Promise<void>;
+  addToCart: (productId: string, quantity: number) => Promise<void>;
   removeFromCart: (cartItemId: string) => Promise<void>;
   updateQty: (cartItemId: string, qty: number) => Promise<void>;
 };
@@ -57,18 +57,30 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     fetchCart();
   }, []);
 
-  const addToCart = async (productId: string) => {
+  const addToCart = async (productId: string, quantity: number) => {
     try {
-      const res = await fetch("http://localhost:3000/api/cart/add", {
+      const res = await fetch("http://localhost:3000/api/cart/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ productId, quantity: 1 }),
+        body: JSON.stringify({ productId, quantity }),
       });
 
       if (!res.ok) throw new Error("Failed to add to cart");
 
-      await fetchCart();
+      setCartItems((prev) => {
+        const existing = prev.find((item) => item.productId?._id === productId);
+        if (existing) {
+          return prev.map((item) =>
+            item.productId?._id === productId
+              ? { ...item, quantity: item.quantity + quantity }
+              : item
+          );
+        } else {
+          fetchCart();
+          return prev;
+        }
+      });
     } catch (error) {
       console.error("Add to cart error:", error);
     }

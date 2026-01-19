@@ -20,6 +20,8 @@ export default function Checkout() {
   const [loading, setLoading] = useState(true);
 
   async function fetchShipmentPayment() {
+
+    
     try {
       const response = await fetch("http://localhost:3000/users/profile", {
         method: "GET",
@@ -35,13 +37,13 @@ export default function Checkout() {
         address: data.user.address || "No address provided",
       });
       setLoading(false);
-    }catch(error){
+    } catch (error) {
       console.error("Error fetching user profile:", error);
       navigate("/signin");
     }
   }
 
-   useEffect(() => {
+  useEffect(() => {
     fetchShipmentPayment();
   }, []);
 

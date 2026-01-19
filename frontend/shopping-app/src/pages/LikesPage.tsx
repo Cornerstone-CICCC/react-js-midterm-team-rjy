@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast, Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom"; 
 
 interface Product {
   _id: string;
@@ -61,10 +60,10 @@ export default function Favorites() {
       const next = new Set(prev);
       if (next.has(productId)) {
         next.delete(productId);
-        toast("Removed from wishlist", { position: "top-center" });
+        console.log("Removed from wishlist");
       } else {
         next.add(productId);
-        toast.success("Added to wishlist! ❤️", { position: "top-center" });
+        console.log("Added to wishlist! ❤️");
       }
       saveFavIds(next);
       return next;
@@ -79,12 +78,12 @@ export default function Favorites() {
         body: JSON.stringify({ productId, quantity: 1 }),
       });
       if (res.ok) {
-        toast.success("Added to cart!", { position: "top-center" });
+        console.log("Added to cart!");
       } else {
         throw new Error();
       }
     } catch {
-      toast.error("Failed to add to cart");
+      console.log("Failed to add to cart");
     }
   };
 
@@ -92,7 +91,6 @@ export default function Favorites() {
 
   return (
     <div className="bg-white min-h-screen pb-24 font-['Lora'] serif overflow-x-hidden">
-      <Toaster />
       
       {/* 대화면 대응을 위한 중앙 정렬 컨테이너 (최대 너비 1200px) */}
       <div className="max-w-[1200px] mx-auto px-6 lg:px-10">

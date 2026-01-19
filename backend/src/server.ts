@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 // 라우터 임포트
 import userRouter from "./routes/user.routes";
 import adminRouter from "./routes/adminProduct.routes";
-import cartRouter from "./routes/cartRoutes"; // 장바구니 라우터
+import cartRouter from "./routes/cart.routes"; // 장바구니 라우터
 
 dotenv.config();
 

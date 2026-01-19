@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"; 
 
 import Home from "./components/Home";
 import MainProducts from "./pages/MainProducts";
@@ -110,21 +110,20 @@ function AppContent() {
           }
         />
 
-        <Route path="/product/:id" 
-        element={
-          <ValidateRoute>
-            <ProductDetail />
-          </ValidateRoute>
-        } 
+        <Route
+          path="/product/:id"
+          element={
+            <ValidateRoute>
+              <ProductDetail />
+            </ValidateRoute>
+          }
         />
-
       </Routes>
 
       {shouldShowNav && <BottomNav />}
     </div>
   );
 }
-
 
 function App() {
   return (
