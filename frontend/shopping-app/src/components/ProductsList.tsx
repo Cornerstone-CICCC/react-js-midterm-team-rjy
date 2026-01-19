@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import SearchModal from "./SearchModal";
 import type { SearchProduct } from "./SearchModal";
 import { RiToolsLine } from "react-icons/ri";
+import { useAuth } from "../context/AuthContext";
 
 interface Product extends SearchProduct {}
 
@@ -32,6 +33,8 @@ export default function ProductsList() {
     setCurrentSlide((prev) => (prev + 1) % BANNER_IMAGES.length);
   const prevSlide = () =>
     setCurrentSlide((prev) => (prev - 1 + BANNER_IMAGES.length) % BANNER_IMAGES.length);
+
+  const { user, loading } = useAuth()
 
   return (
     <div className="bg-white min-h-screen pb-20 font-['Lora'] serif overflow-x-hidden">
@@ -121,13 +124,15 @@ export default function ProductsList() {
         <div className="h-20" />
 
         {/* Admin 버튼 */}
-        <button
-          onClick={() => navigate("/admin")}
-          className="bg-slate-900 fixed bottom-16 right-5 z-10 size-12 rounded-full flex items-center justify-center hover:bg-slate-800 hover:cursor-pointer hover:scale-110 transition"
-          aria-label="Go to admin"
-        >
-          <RiToolsLine className="fill-white size-6" />
-        </button>
+        {!loading && user && user.role === "admin" && (
+          <button
+            onClick={() => navigate("/admin")}
+            className="bg-slate-900 fixed bottom-16 right-5 z-10 size-12 rounded-full flex items-center justify-center hover:bg-slate-800 hover:cursor-pointer hover:scale-110 transition"
+            aria-label="Go to admin"
+          >
+            <RiToolsLine className="fill-white size-6" />
+          </button>
+        )}
       </div>
 
       {/* Search Modal */}
