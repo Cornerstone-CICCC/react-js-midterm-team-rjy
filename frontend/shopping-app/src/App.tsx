@@ -18,6 +18,8 @@ import BottomNav from "./components/BottomNav";
 import ProductDetail from "./pages/ProductsDetail"; // ✅ 상세 페이지 임포트
 import { CartProvider } from "./context/CartContext";
 import ValidateRoute from "./components/ValidateRoute";
+import { AuthProvider } from "./context/AuthContext";
+import AdminRoute from "./pages/Admin/AdminRoute";
 
 function AppContent() {
   const location = useLocation();
@@ -32,9 +34,20 @@ function AppContent() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/success" element={<Success />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/product/new" element={<AdminProductNew />} />
-        <Route path="/admin/product/edit/:id" element={<AdminProductEdit />} />
+        <Route
+          path="/admin/*"
+          element={
+          <AuthProvider>
+            <AdminRoute>
+              <Routes>
+                <Route index element={<AdminDashboard />} />
+                <Route path="product/new" element={<AdminProductNew />} />
+                <Route path="product/edit/:id" element={<AdminProductEdit />} />
+              </Routes>
+            </AdminRoute>
+          </AuthProvider>
+          }
+        />
         <Route
           path="/cart"
           element={
