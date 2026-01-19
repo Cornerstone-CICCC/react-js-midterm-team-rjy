@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";  // Agrega este import
+import { useCart } from "../context/CartContext"; 
 
 export default function BottomNav() {
   const navigate = useNavigate();

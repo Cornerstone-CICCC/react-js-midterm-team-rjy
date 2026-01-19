@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { useCart } from "../context/CartContext"; // Asegúrate de tener este import
+import { useCart } from "../context/CartContext"; 
 
 type Product = {
   _id: string;
@@ -27,9 +27,8 @@ export default function ProductsDetail() {
   const { addToCart } = useCart();
 
   const LS_KEY = "favorites_product_ids";
-// filepath: c:\Users\rodri\OneDrive\Escritorio\Web_Development\Midterm_React\react-js-midterm-team-rjy\frontend\shopping-app\src\pages\ProductsDetail.tsx
 useEffect(() => {
-  if (!id) return; // Evita fetch si id es undefined
+  if (!id) return; 
 
   // 1. 상품 상세 정보 페치
   fetch(`http://localhost:3000/api/products/${id}`)
@@ -60,7 +59,7 @@ useEffect(() => {
       if (favIds.has(fallback._id)) setIsLiked(true);
     });
 
-  // 2. 추천/유사 상품 페치 (con manejo de errores)
+  // 2. 추천/유사 상품 페치 
   fetch(`http://localhost:3000/api/products`)
     .then(res => res.json())
     .then(data => {
@@ -71,7 +70,6 @@ useEffect(() => {
       }
     })
     .catch(() => {
-      // Manejo de error: deja arrays vacíos (o agrega toast si quieres notificar)
       console.error("Error fetching similar/recommended products");
     });
 }, [id]);
@@ -105,7 +103,7 @@ useEffect(() => {
     if (!product) return;
     setLoadingCart(true);
     try {
-      await addToCart(product._id, qty); // Llama solo a la función del contexto
+      await addToCart(product._id, qty);
       toast.success("Successfully added to cart!", { position: "top-center" });
     } catch (error) {
       toast.error("Error adding to cart");
