@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import { useCart } from "../context/CartContext"; // Asegúrate de tener este import
 
 type Product = {
   _id: string;
@@ -11,7 +12,7 @@ type Product = {
   sale?: { original: number; current: number };
 };
 
-export default function ProductDetail() {
+export default function ProductsDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
@@ -23,50 +24,57 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [loadingCart, setLoadingCart] = useState(false);
+  const { addToCart } = useCart();
 
   const LS_KEY = "favorites_product_ids";
+// filepath: c:\Users\rodri\OneDrive\Escritorio\Web_Development\Midterm_React\react-js-midterm-team-rjy\frontend\shopping-app\src\pages\ProductsDetail.tsx
+useEffect(() => {
+  if (!id) return; // Evita fetch si id es undefined
 
-  useEffect(() => {
-    // 1. 상품 상세 정보 페치
-    fetch(`http://localhost:3000/api/products/${id}`)
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(data => {
-        setProduct(data);
-        
-        // 로컬 스토리지 확인하여 좋아요 상태 초기화
-        const raw = localStorage.getItem(LS_KEY);
-        const favIds = new Set(raw ? JSON.parse(raw) : []);
-        if (favIds.has(data._id)) {
-          setIsLiked(true);
-        }
-      })
-      .catch(() => {
-        // 에러 시 테스트 데이터 (생략 없이 작성)
-        const fallback = {
-          _id: id || "1",
-          name: "Claudette corset shirt dress in white",
-          price: 65.00,
-          imageUrl: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000",
-          description: "A shirt is a profitable investment in the wardrobe. And here's why:\n- shirts perfectly match with any bottom\n- shirts made of natural fabrics are suitable for any time of the year.",
-          sale: { original: 79.95, current: 65.00 }
-        };
-        setProduct(fallback);
-        const raw = localStorage.getItem(LS_KEY);
-        const favIds = new Set(raw ? JSON.parse(raw) : []);
-        if (favIds.has(fallback._id)) setIsLiked(true);
-      });
+  // 1. 상품 상세 정보 페치
+  fetch(`http://localhost:3000/api/products/${id}`)
+    .then(res => res.ok ? res.json() : Promise.reject())
+    .then(data => {
+      setProduct(data);
+      
+      // 로컬 스토리지 확인하여 좋아요 상태 초기화
+      const raw = localStorage.getItem(LS_KEY);
+      const favIds = new Set(raw ? JSON.parse(raw) : []);
+      if (favIds.has(data._id)) {
+        setIsLiked(true);
+      }
+    })
+    .catch(() => {
+      // 에러 시 테스트 데이터 (생략 없이 작성)
+      const fallback = {
+        _id: id,
+        name: "Claudette corset shirt dress in white",
+        price: 65.00,
+        imageUrl: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000",
+        description: "A shirt is a profitable investment in the wardrobe. And here's why:\n- shirts perfectly match with any bottom\n- shirts made of natural fabrics are suitable for any time of the year.",
+        sale: { original: 79.95, current: 65.00 }
+      };
+      setProduct(fallback);
+      const raw = localStorage.getItem(LS_KEY);
+      const favIds = new Set(raw ? JSON.parse(raw) : []);
+      if (favIds.has(fallback._id)) setIsLiked(true);
+    });
 
-    // 2. 추천/유사 상품 페치
-    fetch(`http://localhost:3000/api/products`)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          const mid = Math.ceil(data.length / 2);
-          setSimilarProducts(data.slice(0, mid));
-          setRecommendedProducts(data.slice(mid));
-        }
-      });
-  }, [id]);
+  // 2. 추천/유사 상품 페치 (con manejo de errores)
+  fetch(`http://localhost:3000/api/products`)
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        const mid = Math.ceil(data.length / 2);
+        setSimilarProducts(data.slice(0, mid));
+        setRecommendedProducts(data.slice(mid));
+      }
+    })
+    .catch(() => {
+      // Manejo de error: deja arrays vacíos (o agrega toast si quieres notificar)
+      console.error("Error fetching similar/recommended products");
+    });
+}, [id]);
 
   // 좋아요 클릭 핸들러
   const handleLikeClick = () => {
@@ -97,16 +105,10 @@ export default function ProductDetail() {
     if (!product) return;
     setLoadingCart(true);
     try {
-      const response = await fetch("http://localhost:3000/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product._id, quantity: qty }),
-      });
-      if (response.ok) {
-        toast.success("Successfully added to cart!", { position: "top-center" });
-      }
+      await addToCart(product._id, qty); // Llama solo a la función del contexto
+      toast.success("Successfully added to cart!", { position: "top-center" });
     } catch (error) {
-      toast.error("Error connecting to server");
+      toast.error("Error adding to cart");
     } finally {
       setLoadingCart(false);
     }
@@ -137,8 +139,6 @@ export default function ProductDetail() {
 
   return (
     <div className="bg-white min-h-screen pb-32 font-['Lora'] serif relative">
-      <Toaster /> 
-
       {/* 중앙 정렬 컨테이너 */}
       <div className="max-w-[1200px] mx-auto px-6">
         
