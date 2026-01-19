@@ -39,19 +39,34 @@ router.post("/", async (req, res) => {
   try {
     const { name, price, imageUrl, description } = req.body;
 
+    if (!name || price === undefined || !imageUrl) {
+      return res.status(400).json({
+        message: "Missing required fields",
+        required: ["name", "price", "imageUrl"],
+        received: { name, price, imageUrl, description },
+      });
+    }
+
     const newProduct = new Product({
       name,
-      price,
+      price: Number(price),
       imageUrl,
       description,
     });
 
     const saved = await newProduct.save();
     res.status(201).json(saved);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
+
+    // mongoose validation error는 400으로
+    if (error?.name === "ValidationError" || error?.name === "CastError") {
+      return res.status(400).json({ message: error.message, error });
+    }
+
     res.status(500).json({ message: "Failed to create product" });
   }
 });
+
 
 export default router;

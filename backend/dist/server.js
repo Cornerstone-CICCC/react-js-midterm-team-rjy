@@ -21,7 +21,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 // 라우터 임포트
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const adminProduct_routes_1 = __importDefault(require("./routes/adminProduct.routes"));
-const cartRoutes_1 = __importDefault(require("./routes/cartRoutes")); // 장바구니 라우터
+const cart_routes_1 = __importDefault(require("./routes/cart.routes")); // 장바구니 라우터
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // 1. Middleware 설정
@@ -49,7 +49,7 @@ app.use(express_1.default.json());
 // 2. Routes 등록
 app.use("/users", user_routes_1.default);
 app.use("/admin", adminProduct_routes_1.default);
-app.use("/api/cart", cartRoutes_1.default); // 장바구니 API 경로 등록
+app.use("/api/cart", cart_routes_1.default); // 장바구니 API 경로 등록
 /**
  * 3. 상품 관련 임시 API (404 방지용)
  * Yuna가 데이터를 복구하기 전까지 프론트엔드에서 상품을 볼 수 있게 합니다.
